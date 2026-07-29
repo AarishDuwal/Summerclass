@@ -1,14 +1,61 @@
 {% extends 'master/base.html' %}
+{% load static %}
 
-{% block title %}{{ product.name }} Details {% endblock %}
+{% block title %}
+{{ product.name }}
+{% endblock %}
 
 {% block content %}
-<h2>{{ get_product.name }}</h2>
-<p><strong>Description:</strong> {{ get_product.description }}</p>
-<p><strong>Price:</strong> Rs. {{ get_product.price }}</p>
-<p><strong>Stock:</strong> {{ get_product.stock }}</p>
 
+<div class="row">
 
+    <div class="col-md-5">
 
-<a href="{% url 'home' %}">Back to Products</a>
+        {% if product.product_image %}
+            <img src="{{ product.product_image.url }}"
+                 class="img-fluid rounded shadow"
+                 alt="{{ product.name }}"
+                 style="width:100%; height:450px; object-fit:cover;">
+        {% else %}
+            <img src="{% static 'images/default.jpg' %}"
+                 class="img-fluid rounded shadow"
+                 alt="No Image"
+                 style="width:100%; height:450px; object-fit:cover;">
+        {% endif %}
+
+    </div>
+
+    <div class="col-md-7">
+
+        <h1>{{ product.name }}</h1>
+
+        <p class="lead">
+            {{ product.description }}
+        </p>
+
+        <h2 class="text-success">
+            Rs. {{ product.price }}
+        </h2>
+
+        <hr>
+
+        <h4>
+            Stock :
+            {% if product.stock > 0 %}
+                <span class="badge bg-success">{{ product.stock }} Available</span>
+            {% else %}
+                <span class="badge bg-danger">Out of Stock</span>
+            {% endif %}
+        </h4>
+
+        <br>
+
+        <a href="/" class="btn btn-secondary">
+            ← Back to Products
+        </a>
+
+    </div>
+
+</div>
+
 {% endblock %}

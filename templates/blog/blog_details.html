@@ -1,0 +1,47 @@
+{% extends 'master/base.html' %}
+{% load static %}
+
+{% block title %}
+{{ blog.title }}
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+
+    <div class="col-md-5">
+
+        {% if blog.image %}
+            <img src="{{ blog.image.url }}"
+                 class="img-fluid rounded shadow"
+                 alt="{{ blog.title }}">
+        {% else %}
+            <img src="{% static 'images/default.jpg' %}"
+                 class="img-fluid rounded shadow"
+                 alt="No Image">
+        {% endif %}
+
+    </div>
+
+    <div class="col-md-7">
+
+        <h1>{{ blog.title }}</h1>
+
+        <p class="text-muted">
+            By <strong>{{ blog.author }}</strong> |
+            {{ blog.published_date|date:"F d, Y" }}
+        </p>
+
+        <hr>
+
+        <p>{{ blog.content|linebreaks }}</p>
+
+        <a href="{% url 'blogs' %}" class="btn btn-secondary">
+            ← Back to Blogs
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

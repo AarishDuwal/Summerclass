@@ -1,13 +1,64 @@
 {% extends 'master/base.html' %}
+{% load static %}
+
 {% block title %}Home{% endblock %}
+
 {% block content %}
-<h2>Our Products</h2>
+
+<h2 class="mb-4">Our Products</h2>
+
+<div class="row">
+
 {% for product in products %}
-<div class="product">
-    <a href="{% url 'product_detail' product.id %}">
-    {{ product.name }}
-    </a>
-    <p>Price: Rs. {{ product.price }}</p>
+
+<div class="col-lg-4 col-md-6 mb-4">
+
+<div class="card shadow-sm h-100">
+
+{% if product.product_image %}
+<img src="{{ product.product_image.url }}" class="card-img-top">
+{% else %}
+<img src="{% static 'images/default.jpg' %}" class="card-img-top">
+{% endif %}
+
+<div class="card-body">
+
+<h5>{{ product.name }}</h5>
+
+<p>{{ product.description|truncatewords:18 }}</p>
+
+<h4 class="text-success">
+Rs. {{ product.price }}
+</h4>
+
+{% if product.stock > 0 %}
+<span class="badge bg-success">In Stock</span>
+{% else %}
+<span class="badge bg-danger">Out of Stock</span>
+{% endif %}
+
+<br><br>
+
+<a href="{% url 'product_detail' product.pk %}" class="btn btn-primary">
+View Details
+</a>
+
 </div>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<div class="col-12">
+<div class="alert alert-info">
+No products available.
+</div>
+</div>
+
 {% endfor %}
+
+</div>
+
 {% endblock %}

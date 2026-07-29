@@ -5,6 +5,7 @@ class Page(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(unique=True)
+    blog_image = models.ImageField(upload_to='photos/blogs', blank=True)
 
     def __str__(self):
         return self.title

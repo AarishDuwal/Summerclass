@@ -5,6 +5,7 @@ class Blog(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
     author = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='photos/blogs', blank=True, null=True)
     published_date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):

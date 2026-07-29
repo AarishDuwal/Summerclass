@@ -17,6 +17,7 @@ class product(models.Model):
     category = models.ForeignKey(category, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
     status = models.BooleanField(default=0)
+    product_image = models.ImageField(upload_to='photos/products', blank=True)
 
 
     
