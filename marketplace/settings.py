@@ -27,7 +27,15 @@ SECRET_KEY = 'django-insecure-c35zz0apozft3hn81%6wo2(nnfy3p3!(m0nxnec2kivjgbg0*a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'Summerclass-crjx.onrender.com',
+    '127.0.0.1',
+    'localhost',
+]
+
+CSFR_TRUSTED_ORIGINS = [
+    'https://Summerclass-crjx.onrender.com',
+]
 
 
 # Application definition
@@ -56,6 +64,15 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
+
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL')
+    )
+}
+
+
 
 ROOT_URLCONF = 'marketplace.urls'
 
