@@ -28,13 +28,13 @@ SECRET_KEY = 'django-insecure-c35zz0apozft3hn81%6wo2(nnfy3p3!(m0nxnec2kivjgbg0*a
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'Summerclass-crjx.onrender.com',
+    'summerclass-cu1t.onrender.com',
     '127.0.0.1',
     'localhost',
 ]
 
 CSFR_TRUSTED_ORIGINS = [
-    'https://Summerclass-crjx.onrender.com',
+    'https://summerclass-cu1t.onrender.com',
 ]
 
 
