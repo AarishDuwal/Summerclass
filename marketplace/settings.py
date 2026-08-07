@@ -29,12 +29,16 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'summerclass-cu1t.onrender.com',
+    'aarish.com.np',
+    'www.aarish.com.np',
     '127.0.0.1',
     'localhost',
 ]
 
 CSFR_TRUSTED_ORIGINS = [
     'https://summerclass-cu1t.onrender.com',
+    'https://aarish.com.np',
+    'https://www.aarish.com.np',
 ]
 
 
