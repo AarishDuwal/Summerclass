@@ -18,6 +18,11 @@ def cart_add(request, product_id):
     product_obj = get_object_or_404(Product, id=product_id)
     next_url = request.POST.get('next') or 'cart:cart'
 
+    is_owner = request.user.is_authenticated and product_obj.owner_id == request.user.id
+    if not product_obj.is_live and not (is_owner or request.user.is_staff):
+        messages.error(request, 'This product is not currently available.')
+        return redirect(next_url)
+
     if product_obj.stock <= 0:
         messages.error(request, f'"{product_obj.name}" is out of stock.')
         return redirect(next_url)
