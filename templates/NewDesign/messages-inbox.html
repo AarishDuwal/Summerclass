@@ -1,0 +1,54 @@
+{% extends 'NewDesign/base.html' %}
+{% load static %}
+
+{% block title %}Inbox{% endblock %}
+
+{% block content %}
+<section class="section-content padding-y bg">
+  <div class="container">
+    <div class="row">
+      <aside class="col-md-3">
+        {% include 'NewDesign/_dashboard_sidebar.html' with active='messages_inbox' %}
+      </aside>
+      <main class="col-md-9">
+        <article class="card">
+          <header class="card-header"><strong>Inbox</strong></header>
+          <div class="card-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>From</th>
+                  <th>Subject</th>
+                  <th>Message</th>
+                  <th>Date</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for msg in message_list %}
+                <tr class="{% if not msg.is_read %}font-weight-bold{% endif %}">
+                  <td>{{ msg.sender.first_name|default:msg.sender.username }}</td>
+                  <td>{{ msg.subject|default:"(no subject)" }}</td>
+                  <td>{{ msg.body|truncatechars:60 }}</td>
+                  <td>{{ msg.created_at|date:"M d, Y" }}</td>
+                  <td class="text-right">
+                    {% if not msg.is_read %}
+                    <a href="{% url 'accounts:message_mark_read' msg.id %}" class="btn btn-sm btn-outline-secondary">Mark read</a>
+                    {% endif %}
+                    <a href="{% url 'accounts:send_message' msg.sender.id %}" class="btn btn-sm btn-outline-primary">Reply</a>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="5" class="text-center text-muted py-4">Your inbox is empty.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </main>
+    </div>
+  </div>
+</section>
+{% endblock %}

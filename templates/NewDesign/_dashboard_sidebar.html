@@ -1,0 +1,39 @@
+<ul class="list-group">
+  <a class="list-group-item {% if active == 'dashboard' %}active{% endif %}" href="{% url 'accounts:dashboard' %}">
+    Dashboard
+  </a>
+  <a class="list-group-item {% if active == 'my_products' %}active{% endif %}" href="{% url 'my_products' %}">
+    My Products
+  </a>
+  <a class="list-group-item {% if active == 'add_product' %}active{% endif %}" href="{% url 'add_product' %}">
+    Add Product
+  </a>
+  <a class="list-group-item {% if active == 'my_orders' %}active{% endif %}" href="{% url 'accounts:my_orders' %}">
+    My Orders
+  </a>
+  <a class="list-group-item {% if active == 'my_sales' %}active{% endif %}" href="{% url 'accounts:my_sales' %}">
+    My Sales
+  </a>
+  <a class="list-group-item {% if active == 'requests_sent' %}active{% endif %}" href="{% url 'accounts:requests_sent' %}">
+    My Sent Requests
+  </a>
+  <a class="list-group-item {% if active == 'requests_received' %}active{% endif %}" href="{% url 'accounts:requests_received' %}">
+    My Received Requests
+  </a>
+  <a class="list-group-item {% if active == 'messages_inbox' %}active{% endif %}" href="{% url 'accounts:messages_inbox' %}">
+    Messages
+  </a>
+  <a class="list-group-item {% if active == 'messages_sent' %}active{% endif %}" href="{% url 'accounts:messages_sent' %}">
+    Sent
+  </a>
+  <a class="list-group-item {% if active == 'edit_profile' %}active{% endif %}" href="{% url 'accounts:edit_profile' %}">
+    Edit Profile
+  </a>
+  <a class="list-group-item {% if active == 'change_password' %}active{% endif %}" href="{% url 'accounts:change_password' %}">
+    Change Password
+  </a>
+</ul>
+<br />
+<a class="btn btn-light btn-block" href="{% url 'accounts:logout' %}">
+  <i class="fa fa-power-off"></i> <span class="text">Log out</span>
+</a>

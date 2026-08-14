@@ -1,0 +1,59 @@
+{% extends 'NewDesign/base.html' %}
+{% load static %}
+
+{% block title %}My Sales{% endblock %}
+
+{% block content %}
+<section class="section-content padding-y bg">
+  <div class="container">
+    <div class="row">
+      <aside class="col-md-3">
+        {% include 'NewDesign/_dashboard_sidebar.html' with active='my_sales' %}
+      </aside>
+      <main class="col-md-9">
+        <article class="card">
+          <header class="card-header"><strong>My Sales</strong></header>
+          <div class="card-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Order #</th>
+                  <th>Product</th>
+                  <th>Buyer</th>
+                  <th>Quantity</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in sale_items %}
+                <tr>
+                  <td>#{{ item.order.id }}</td>
+                  <td>{{ item.product_name }}</td>
+                  <td>{{ item.order.first_name }} {{ item.order.last_name }}</td>
+                  <td>{{ item.quantity }}</td>
+                  <td>Rs. {{ item.subtotal }}</td>
+                  <td>
+                    {% if item.order.status == 'placed' %}
+                      <span class="badge badge-success">Placed</span>
+                    {% else %}
+                      <span class="badge badge-warning">Pending</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="6" class="text-center text-muted py-4">
+                    No sales yet. Once someone buys one of your products, it'll show up here.
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </main>
+    </div>
+  </div>
+</section>
+{% endblock %}

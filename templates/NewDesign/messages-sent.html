@@ -1,0 +1,47 @@
+{% extends 'NewDesign/base.html' %}
+{% load static %}
+
+{% block title %}Sent Messages{% endblock %}
+
+{% block content %}
+<section class="section-content padding-y bg">
+  <div class="container">
+    <div class="row">
+      <aside class="col-md-3">
+        {% include 'NewDesign/_dashboard_sidebar.html' with active='messages_sent' %}
+      </aside>
+      <main class="col-md-9">
+        <article class="card">
+          <header class="card-header"><strong>Sent Messages</strong></header>
+          <div class="card-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>To</th>
+                  <th>Subject</th>
+                  <th>Message</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for msg in message_list %}
+                <tr>
+                  <td>{{ msg.recipient.first_name|default:msg.recipient.username }}</td>
+                  <td>{{ msg.subject|default:"(no subject)" }}</td>
+                  <td>{{ msg.body|truncatechars:60 }}</td>
+                  <td>{{ msg.created_at|date:"M d, Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="4" class="text-center text-muted py-4">You haven't sent any messages yet.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </main>
+    </div>
+  </div>
+</section>
+{% endblock %}

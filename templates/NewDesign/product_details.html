@@ -40,6 +40,12 @@
 
           <p>{{ product.description }}</p>
 
+          {% if product.owner %}
+          <p class="text-muted small">
+            Sold by <strong>{{ product.owner.first_name|default:product.owner.username }}</strong>
+          </p>
+          {% endif %}
+
           {% if product.stock > 0 %}
           <form action="{% url 'cart:add' product.id %}" method="post" class="form-row">
             {% csrf_token %}
@@ -53,6 +59,24 @@
           </form>
           {% else %}
           <button class="btn btn-secondary" disabled>Out of stock</button>
+          {% endif %}
+
+          {% if product.owner and user.is_authenticated and product.owner_id != user.id %}
+          <div class="mt-3 pt-3 border-top">
+            <a href="{% url 'accounts:send_message' product.owner.id %}" class="btn btn-outline-primary btn-sm">
+              Message Seller
+            </a>
+            <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="collapse" data-target="#contactSellerForm">
+              Send Request
+            </button>
+            <form id="contactSellerForm" class="collapse mt-2" action="{% url 'accounts:send_product_request' product.id %}" method="post">
+              {% csrf_token %}
+              <div class="form-group">
+                <textarea name="message" class="form-control" rows="2" placeholder="e.g. Is this still available? Would you take Rs. ...?"></textarea>
+              </div>
+              <button type="submit" class="btn btn-sm btn-primary">Send</button>
+            </form>
+          </div>
           {% endif %}
         </article>
         <!-- product-info-aside .// -->
