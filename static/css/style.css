@@ -1,8 +1,2 @@
-body{
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    padding: 20px;
-}
-h1{
-    color: #333;
-}
+/* Legacy placeholder — superseded by ui.css. Kept for backward compatibility
+   with any template that might still reference it; intentionally empty. */

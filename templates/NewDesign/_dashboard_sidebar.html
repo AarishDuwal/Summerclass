@@ -1,36 +1,36 @@
 <ul class="list-group">
   <a class="list-group-item {% if active == 'dashboard' %}active{% endif %}" href="{% url 'accounts:dashboard' %}">
-    Dashboard
+    <i class="fa fa-th-large"></i> Dashboard
   </a>
   <a class="list-group-item {% if active == 'my_products' %}active{% endif %}" href="{% url 'my_products' %}">
-    My Products
+    <i class="fa fa-box"></i> My Products
   </a>
   <a class="list-group-item {% if active == 'add_product' %}active{% endif %}" href="{% url 'add_product' %}">
-    Add Product
+    <i class="fa fa-plus-circle"></i> Add Product
   </a>
   <a class="list-group-item {% if active == 'my_orders' %}active{% endif %}" href="{% url 'accounts:my_orders' %}">
-    My Orders
+    <i class="fa fa-shopping-bag"></i> My Orders
   </a>
   <a class="list-group-item {% if active == 'my_sales' %}active{% endif %}" href="{% url 'accounts:my_sales' %}">
-    My Sales
+    <i class="fa fa-chart-line"></i> My Sales
   </a>
   <a class="list-group-item {% if active == 'requests_sent' %}active{% endif %}" href="{% url 'accounts:requests_sent' %}">
-    My Sent Requests
+    <i class="fa fa-paper-plane"></i> My Sent Requests
   </a>
   <a class="list-group-item {% if active == 'requests_received' %}active{% endif %}" href="{% url 'accounts:requests_received' %}">
-    My Received Requests
+    <i class="fa fa-inbox"></i> My Received Requests
   </a>
   <a class="list-group-item {% if active == 'messages_inbox' %}active{% endif %}" href="{% url 'accounts:messages_inbox' %}">
-    Messages
+    <i class="fa fa-envelope"></i> Messages
   </a>
   <a class="list-group-item {% if active == 'messages_sent' %}active{% endif %}" href="{% url 'accounts:messages_sent' %}">
-    Sent
+    <i class="fa fa-envelope-open-text"></i> Sent
   </a>
   <a class="list-group-item {% if active == 'edit_profile' %}active{% endif %}" href="{% url 'accounts:edit_profile' %}">
-    Edit Profile
+    <i class="fa fa-user-edit"></i> Edit Profile
   </a>
   <a class="list-group-item {% if active == 'change_password' %}active{% endif %}" href="{% url 'accounts:change_password' %}">
-    Change Password
+    <i class="fa fa-key"></i> Change Password
   </a>
 </ul>
 <br />

@@ -1,21 +1,27 @@
-/* Responsive adjustments for the VOLT redesign */
+/* Responsive adjustments for the "Campus Market" redesign */
 @media (max-width: 1200px){
-  .section-pagetop .title-page{ font-size:2.1rem; }
-  .section-heading .section-title{ font-size:1.5rem; }
+  .section-pagetop .title-page{ font-size:1.9rem; }
+  .section-heading .section-title{ font-size:1.4rem; }
 }
 @media (max-width: 991px){
+  .top-bar{ text-align:center; }
   .header-main{ text-align:center; }
-  .brand-wrap{ margin-bottom:.75rem; }
-  .category-wrap{ float:none !important; margin-bottom:.75rem; }
+  .brand-wrap{ margin-bottom:.75rem; justify-content:center; }
+  .main-nav{ margin-bottom:.75rem; }
+  .main-nav .navbar-nav{ align-items:center; }
+  .category-wrap{ float:none !important; margin-bottom:.75rem; display:flex; justify-content:center; }
   .search{ margin-bottom:.75rem; }
   .widget-header{ align-items:center; }
   .card-product-grid .title{ font-size:.92rem; }
+  .header-actions{ justify-content:center !important; }
 }
 @media (max-width: 767px){
   .padding-y{ padding-top:32px; padding-bottom:32px; }
+  .section-intro{ padding:2.75rem 0; }
   .section-pagetop{ padding:2rem 0; }
-  .section-pagetop .title-page{ font-size:1.75rem; }
+  .section-pagetop .title-page{ font-size:1.6rem; }
   .product-info-aside .title{ font-size:1.5rem; }
   .dlist-align{ flex-direction:row; }
   .itemside{ flex-direction:column; align-items:flex-start; text-align:left; }
+  .intro-banner-wrap::before{ display:none; }
 }

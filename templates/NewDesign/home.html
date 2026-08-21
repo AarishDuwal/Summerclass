@@ -6,18 +6,26 @@
 {% block content %}
     <!-- ========================= SECTION HERO ========================= -->
     <section class="section-intro">
-      <div class="container">
+      <div class="container" style="position:relative;">
         <div class="row align-items-center">
           <div class="col-lg-6">
-            <h1 style="font-size:2.75rem; line-height:1.15; color:#fff; margin-bottom:1rem;">
-              Buy bold. Sell smart.<br /><span style="color:var(--accent-2);">Shop campus.</span>
+            <span class="hero-eyebrow"><i class="fa fa-graduation-cap"></i> Built by Islington College</span>
+            <h1 style="font-size:2.9rem; line-height:1.12; color:#fff; margin-bottom:1rem;">
+              Buy bold. Sell smart.<br /><span style="color:var(--gold);">Shop campus.</span>
             </h1>
-            <p style="color:rgba(255,255,255,.85); font-size:1.05rem; margin-bottom:1.5rem;">
+            <p style="color:rgba(255,255,255,.75); font-size:1.08rem; margin-bottom:1.75rem; max-width:460px;">
               The marketplace built for Islington College — find deals from fellow students and staff, or list your own in minutes.
             </p>
-            <a href="{% url 'products' %}" class="btn btn-lg" style="background:var(--accent-2); color:var(--ink); border-color:var(--accent-2);">
-              Browse the store <i class="fa fa-arrow-right ml-1"></i>
-            </a>
+            <div class="d-flex flex-wrap" style="gap:.75rem;">
+              <a href="{% url 'products' %}" class="btn btn-lg btn-primary">
+                Browse the store <i class="fa fa-arrow-right ml-1"></i>
+              </a>
+              {% if not user.is_authenticated %}
+              <a href="{% url 'accounts:register' %}" class="btn btn-lg" style="background:transparent; border-color:rgba(255,255,255,.35); color:#fff;">
+                Start selling
+              </a>
+              {% endif %}
+            </div>
           </div>
           <div class="col-lg-6 d-none d-lg-block">
             <div class="intro-banner-wrap">
@@ -29,6 +37,36 @@
       <!-- container //  -->
     </section>
     <!-- ========================= SECTION HERO END// ========================= -->
+
+    <!-- ========================= SECTION PERKS ========================= -->
+    <section class="padding-y-sm" style="background:var(--ink);">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4 mb-3 mb-md-0">
+            <div class="perk-card">
+              <div class="perk-icon"><i class="fa fa-bolt"></i></div>
+              <h4>Fast listings</h4>
+              <p>List a product in under a minute.</p>
+            </div>
+          </div>
+          <div class="col-md-4 mb-3 mb-md-0">
+            <div class="perk-card">
+              <div class="perk-icon"><i class="fa fa-shield-alt"></i></div>
+              <h4>Verified sellers</h4>
+              <p>Every listing is reviewed before it goes live.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="perk-card">
+              <div class="perk-icon"><i class="fa fa-comments"></i></div>
+              <h4>Direct messaging</h4>
+              <p>Chat with sellers before you buy.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ========================= SECTION PERKS END// ========================= -->
 
     <!-- ========================= SECTION  ========================= -->
     <section class="section-name padding-y">
@@ -72,25 +110,4 @@
       <!-- container // -->
     </section>
     <!-- ========================= SECTION  END// ========================= -->
-
-    <!-- ========================= SECTION PERKS ========================= -->
-    <section class="padding-y-sm" style="background:var(--ink);">
-      <div class="container">
-        <div class="row text-center">
-          <div class="col-md-4 mb-3 mb-md-0">
-            <h4 style="color:var(--accent-2);"><i class="fa fa-bolt"></i> Fast listings</h4>
-            <p class="mb-0" style="color:rgba(255,255,255,.7);">List a product in under a minute.</p>
-          </div>
-          <div class="col-md-4 mb-3 mb-md-0">
-            <h4 style="color:var(--accent-2);"><i class="fa fa-shield-alt"></i> Verified sellers</h4>
-            <p class="mb-0" style="color:rgba(255,255,255,.7);">Every listing is reviewed before it goes live.</p>
-          </div>
-          <div class="col-md-4">
-            <h4 style="color:var(--accent-2);"><i class="fa fa-comments"></i> Direct messaging</h4>
-            <p class="mb-0" style="color:rgba(255,255,255,.7);">Chat with sellers before you buy.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- ========================= SECTION PERKS END// ========================= -->
 {% endblock %}
