@@ -4,7 +4,12 @@ from .models import category, product
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name')
+    list_display = ('id', 'name', 'product_count')
+    search_fields = ('name',)
+
+    def product_count(self, obj):
+        return obj.product_set.count()
+    product_count.short_description = 'Products'
 
 
 class ProductAdmin(admin.ModelAdmin):

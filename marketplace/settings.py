@@ -74,7 +74,8 @@ MIDDLEWARE = [
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL')
+        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
+        conn_max_age=600,
     )
 }
 
@@ -100,17 +101,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'marketplace.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
 
 # Password validation
@@ -164,3 +154,52 @@ MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+
+# Jazzmin admin theme
+# https://django-jazzmin.readthedocs.io/configuration/
+JAZZMIN_SETTINGS = {
+    "site_title": "Islington Marketplace Admin",
+    "site_header": "Islington Marketplace",
+    "site_brand": "Islington Marketplace",
+    "welcome_sign": "Welcome to the Islington Marketplace admin",
+    "copyright": "Islington Marketplace",
+    "search_model": ["products.product", "auth.User"],
+
+    "icons": {
+        "auth.User": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        "products.product": "fas fa-box",
+        "products.category": "fas fa-tags",
+        "cart.Order": "fas fa-receipt",
+        "cart.OrderItem": "fas fa-shopping-basket",
+        "accounts.Profile": "fas fa-id-card",
+        "accounts.ProductRequest": "fas fa-comment-dollar",
+        "accounts.Message": "fas fa-envelope",
+        "blog.Blog": "fas fa-newspaper",
+        "pages.Page": "fas fa-file-alt",
+        "sitesetting.SiteSetting": "fas fa-cogs",
+    },
+    "default_icon_parents": "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-circle",
+
+    "order_with_respect_to": [
+        "auth",
+        "products",
+        "cart",
+        "accounts",
+        "blog",
+        "pages",
+        "sitesetting",
+    ],
+
+    "changeform_format": "horizontal_tabs",
+    "show_ui_builder": True,
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "theme": "flatly",
+    "navbar": "navbar-dark",
+    "sidebar": "sidebar-dark-primary",
+    "brand_colour": "navbar-primary",
+    "accent": "accent-primary",
+}

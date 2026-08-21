@@ -28,11 +28,14 @@
           {% for item in products|slice:":8" %}
           <div class="col-md-3">
             <div class="card card-product-grid">
-              <a href="{% url 'product_detail' item.id %}" class="img-wrap">
+              <a href="{% url 'product_detail' item.id %}" class="img-wrap" style="position:relative;">
                 {% if item.product_image %}
                   <img src="{{ item.product_image.url }}" />
                 {% else %}
                   <img src="{% static 'images/items/1.jpg' %}" />
+                {% endif %}
+                {% if item.stock <= 0 %}
+                  <span class="badge badge-secondary" style="position:absolute; top:8px; right:8px;">Out of stock</span>
                 {% endif %}
               </a>
               <figcaption class="info-wrap">

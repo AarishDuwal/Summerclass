@@ -1,4 +1,6 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
@@ -58,6 +60,7 @@ def cart_remove(request, product_id):
     return redirect('cart:cart')
 
 
+@login_required(login_url='accounts:login')
 def checkout(request):
     cart = Cart(request)
     if len(cart) == 0:
@@ -65,8 +68,18 @@ def checkout(request):
         return redirect('cart:cart')
 
     if request.method == 'POST':
+        # Re-check stock at checkout time — it may have changed since items were added.
+        for item in cart:
+            if item['quantity'] > max(item['product'].stock, 0):
+                messages.error(
+                    request,
+                    f'Only {max(item["product"].stock, 0)} of "{item["product"].name}" left in stock. '
+                    'Please update your cart.'
+                )
+                return redirect('cart:cart')
+
         order = Order.objects.create(
-            user=request.user if request.user.is_authenticated else None,
+            user=request.user,
             first_name=request.POST.get('first_name', ''),
             last_name=request.POST.get('last_name', ''),
             email=request.POST.get('email', ''),
@@ -91,12 +104,31 @@ def checkout(request):
     return render(request, 'NewDesign/checkout.html', {'cart': cart})
 
 
+@login_required(login_url='accounts:login')
 def place_order(request, order_id):
-    order = get_object_or_404(Order, id=order_id, status=Order.STATUS_PENDING)
+    order = get_object_or_404(Order, id=order_id, status=Order.STATUS_PENDING, user=request.user)
 
     if request.method == 'POST':
-        order.status = Order.STATUS_PLACED
-        order.save()
+        with transaction.atomic():
+            # Lock the rows so two people can't both buy the last unit at once.
+            for item in order.items.select_related('product').select_for_update():
+                if item.product is None:
+                    continue
+                if item.quantity > max(item.product.stock, 0):
+                    messages.error(
+                        request,
+                        f'Sorry, "{item.product_name}" no longer has enough stock to fulfil this order.'
+                    )
+                    return redirect('cart:cart')
+
+            for item in order.items.select_related('product').select_for_update():
+                if item.product is not None:
+                    item.product.stock -= item.quantity
+                    item.product.save(update_fields=['stock'])
+
+            order.status = Order.STATUS_PLACED
+            order.save()
+
         Cart(request).clear()
         messages.success(request, f'Order #{order.id} placed successfully! We will be in touch shortly.')
         return redirect('home')

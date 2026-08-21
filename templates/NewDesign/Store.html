@@ -83,7 +83,7 @@
           {% for item in products %}
           <div class="col-md-4">
             <figure class="card card-product-grid">
-              <div class="img-wrap">
+              <div class="img-wrap" style="position:relative;">
                 <a href="{% url 'product_detail' item.id %}">
                   {% if item.product_image %}
                     <img src="{{ item.product_image.url }}" />
@@ -91,6 +91,9 @@
                     <img src="{% static 'images/items/1.jpg' %}" />
                   {% endif %}
                 </a>
+                {% if item.stock <= 0 %}
+                  <span class="badge badge-secondary" style="position:absolute; top:8px; right:8px;">Out of stock</span>
+                {% endif %}
               </div>
               <!-- img-wrap.// -->
               <figcaption class="info-wrap">
@@ -101,7 +104,11 @@
                   </div>
                   <!-- price-wrap.// -->
                 </div>
+                {% if item.stock > 0 %}
                 <a href="{% url 'product_detail' item.id %}" class="btn btn-block btn-primary">View Details</a>
+                {% else %}
+                <a href="{% url 'product_detail' item.id %}" class="btn btn-block btn-outline-secondary">View Details</a>
+                {% endif %}
               </figcaption>
             </figure>
           </div>
