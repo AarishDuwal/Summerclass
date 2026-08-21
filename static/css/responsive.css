@@ -1,84 +1,21 @@
-.mobile-block {
-  display: none;
+/* Responsive adjustments for the VOLT redesign */
+@media (max-width: 1200px){
+  .section-pagetop .title-page{ font-size:2.1rem; }
+  .section-heading .section-title{ font-size:1.5rem; }
 }
-
-@media (max-width: 1200px) {
-  /* tablet devices */
+@media (max-width: 991px){
+  .header-main{ text-align:center; }
+  .brand-wrap{ margin-bottom:.75rem; }
+  .category-wrap{ float:none !important; margin-bottom:.75rem; }
+  .search{ margin-bottom:.75rem; }
+  .widget-header{ align-items:center; }
+  .card-product-grid .title{ font-size:.92rem; }
 }
-@media (max-width: 992px) {
-  /* small tablet devices */
-  .slider-main .item-slide {
-    height: auto;
-  }
-
-  .table-shopping-cart tr td:first-child {
-    width: 250px;
-  }
-  .table-shopping-cart .itemside .info {
-    padding: 0;
-  }
-  .table-shopping-cart .itemside .aside {
-    display: none;
-  }
+@media (max-width: 767px){
+  .padding-y{ padding-top:32px; padding-bottom:32px; }
+  .section-pagetop{ padding:2rem 0; }
+  .section-pagetop .title-page{ font-size:1.75rem; }
+  .product-info-aside .title{ font-size:1.5rem; }
+  .dlist-align{ flex-direction:row; }
+  .itemside{ flex-direction:column; align-items:flex-start; text-align:left; }
 }
-@media all and (max-width: 768px) {
-  /* mobile devices */
-  .mobile-block {
-    display: block;
-  }
-
-  .mobile-hide {
-    display: none;
-  }
-
-  .section-header .logo {
-    max-height: 40px;
-    width: auto;
-  }
-  .section-header .header-main .brand-wrap {
-    margin-bottom: 1rem;
-    display: inline-block;
-  }
-  .section-header .header-main .search {
-    margin-bottom: 1rem;
-  }
-
-  .item-feature {
-    margin-bottom: 20px;
-  }
-
-  .mobile-order-first {
-    order: -1;
-  }
-
-  .mobile-order-1 {
-    order: 1;
-  }
-
-  .mobile-order-2 {
-    order: 2;
-  }
-
-  .mobile-order-3 {
-    order: 3;
-  }
-
-  .mobile-py {
-    padding-top: 20px;
-    padding-bottom: 20px;
-  }
-
-  .mobile-pb {
-    padding-bottom: 20px;
-  }
-
-  .mobile-pt {
-    padding-top: 20px;
-  }
-
-  .navbar-expand .navbar-collapse {
-    flex-direction: column;
-  }
-}
-
-/*# sourceMappingURL=responsive.css.map */
