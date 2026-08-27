@@ -41,11 +41,13 @@ ALLOWED_HOSTS = [
     'localhost',
 ]
 
-CSFR_TRUSTED_ORIGINS = [
+CSRF_TRUSTED_ORIGINS = [
     'https://summerclass-production.up.railway.app',
     'https://aarish.com.np',
     'https://www.aarish.com.np',
 ]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # Application definition
