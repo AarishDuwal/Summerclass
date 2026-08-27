@@ -34,7 +34,7 @@ SECRET_KEY = os.environ.get(
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = [
-    'summerclass-cu1t.onrender.com',
+    'summerclass-production.up.railway.app',
     'aarish.com.np',
     'www.aarish.com.np',
     '127.0.0.1',
@@ -42,7 +42,7 @@ ALLOWED_HOSTS = [
 ]
 
 CSFR_TRUSTED_ORIGINS = [
-    'https://summerclass-cu1t.onrender.com',
+    'https://summerclass-production.up.railway.app',
     'https://aarish.com.np',
     'https://www.aarish.com.np',
 ]
