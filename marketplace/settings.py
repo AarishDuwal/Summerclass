@@ -167,7 +167,7 @@ STORAGES = {
 
 #media files settings
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.environ.get('RAILWAY_VOLUME_MOUNT_PATH', BASE_DIR / 'media')
 
 # Auth redirects
 LOGIN_URL = 'accounts:login'
