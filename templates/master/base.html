@@ -9,54 +9,49 @@
     <title>{% block title %}Islington Marketplace{% endblock %}</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="{% static 'css/ui.css' %}" rel="stylesheet" type="text/css" />
 
     <style>
-        body{ background:var(--paper); }
+        body{
+            background:#f5f7fa;
+        }
 
         .navbar{
-            background:var(--ink) !important;
-            border-bottom:3px solid var(--ink);
+            box-shadow:0 2px 10px rgba(0,0,0,.1);
         }
-        .navbar-brand{
-            font-family:'Space Grotesk', sans-serif;
-            font-weight:800;
-            color:#fff !important;
-            letter-spacing:-0.02em;
+
+        .card{
+            border:none;
+            border-radius:15px;
+            transition:.3s;
         }
-        .navbar .nav-link{ color:#fff !important; font-weight:600; }
-        .navbar .nav-link:hover{ color:var(--accent-2) !important; }
 
-        .card{ border-radius:var(--radius-lg); }
-        .card img{ height:250px; object-fit:cover; border-bottom:3px solid var(--ink); }
-
-        .page-hero{
-            background:var(--ink);
-            color:#fff;
-            padding:3rem 0;
-            margin-bottom:2.5rem;
+        .card:hover{
+            transform:translateY(-8px);
+            box-shadow:0 15px 30px rgba(0,0,0,.15);
         }
-        .page-hero h1{ color:#fff; margin:0; }
 
-        footer.site-footer{
+        .card img{
+            height:250px;
+            object-fit:cover;
+        }
+
+        footer{
             margin-top:60px;
-            padding:2rem 0;
-            background:var(--ink);
-            color:rgba(255,255,255,.75);
+            padding:20px;
+            background:#212529;
+            color:white;
             text-align:center;
         }
     </style>
 
-    {% block extra_css %}{% endblock %}
 </head>
 
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
 
-        <a class="navbar-brand" href="{% url 'home' %}">
+        <a class="navbar-brand fw-bold" href="{% url 'home' %}">
             🛒 Islington Marketplace
         </a>
 
@@ -98,13 +93,11 @@
     {% endblock %}
 </div>
 
-<footer class="site-footer">
-    &copy; 2026 Islington Marketplace
+<footer>
+    © 2026 Islington Marketplace
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-
-{% block extra_js %}{% endblock %}
 
 </body>
 </html>

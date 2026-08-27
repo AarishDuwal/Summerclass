@@ -1,0 +1,13 @@
+<div class="checkout-steps">
+  <div class="step {% if step == 'cart' %}current{% else %}done{% endif %}">
+    <span class="step-num">{% if step == 'cart' %}1{% else %}<i class="fa fa-check"></i>{% endif %}</span> Cart
+  </div>
+  <div class="step-sep"></div>
+  <div class="step {% if step == 'checkout' %}current{% elif step == 'review' %}done{% endif %}">
+    <span class="step-num">{% if step == 'review' %}<i class="fa fa-check"></i>{% else %}2{% endif %}</span> Checkout
+  </div>
+  <div class="step-sep"></div>
+  <div class="step {% if step == 'review' %}current{% endif %}">
+    <span class="step-num">3</span> Review
+  </div>
+</div>

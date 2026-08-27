@@ -7,63 +7,45 @@
 <section class="section-content padding-y bg">
   <div class="container">
     <div class="row">
-      <aside class="col-md-3">
+      <aside class="col-md-3 mb-4">
         {% include 'NewDesign/_dashboard_sidebar.html' with active='requests_received' %}
       </aside>
       <main class="col-md-9">
-        <article class="card">
-          <header class="card-header"><strong>My Received Requests</strong></header>
-          <div class="card-body">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th>From</th>
-                  <th>Message</th>
-                  <th>Status</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for req in requests_list %}
-                <tr>
-                  <td><a href="{% url 'product_detail' req.product.id %}">{{ req.product.name }}</a></td>
-                  <td>{{ req.sender.first_name|default:req.sender.username }}</td>
-                  <td>{{ req.message|truncatechars:60 }}</td>
-                  <td>
-                    {% if req.status == 'accepted' %}
-                      <span class="badge badge-success">Accepted</span>
-                    {% elif req.status == 'declined' %}
-                      <span class="badge badge-danger">Declined</span>
-                    {% else %}
-                      <span class="badge badge-warning">Pending</span>
-                    {% endif %}
-                  </td>
-                  <td class="text-right">
-                    {% if req.status == 'pending' %}
-                    <form action="{% url 'accounts:request_respond' req.id 'accept' %}" method="post" class="d-inline">
-                      {% csrf_token %}
-                      <button type="submit" class="btn btn-sm btn-success">Accept</button>
-                    </form>
-                    <form action="{% url 'accounts:request_respond' req.id 'decline' %}" method="post" class="d-inline">
-                      {% csrf_token %}
-                      <button type="submit" class="btn btn-sm btn-outline-danger">Decline</button>
-                    </form>
-                    {% endif %}
-                    <a href="{% url 'accounts:send_message' req.sender.id %}" class="btn btn-sm btn-outline-primary">Reply</a>
-                  </td>
-                </tr>
-                {% empty %}
-                <tr>
-                  <td colspan="5" class="text-center text-muted py-4">
-                    No one has sent you a request yet.
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+        <h3 class="mb-3">My Received Requests</h3>
+
+        {% for req in requests_list %}
+        <div class="list-row">
+          <div class="list-row-avatar">{{ req.sender.first_name|default:req.sender.username|slice:":1"|upper }}</div>
+          <div class="list-row-body">
+            <a href="{% url 'product_detail' req.product.id %}" class="list-row-title text-dark">{{ req.product.name }}</a>
+            <div class="list-row-sub">From {{ req.sender.first_name|default:req.sender.username }}</div>
+            {% if req.message %}<div class="mt-1 small">"{{ req.message|truncatechars:80 }}"</div>{% endif %}
           </div>
-        </article>
+          <div class="list-row-actions">
+            {% if req.status == 'pending' %}
+            <form action="{% url 'accounts:request_respond' req.id 'accept' %}" method="post" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-success">Accept</button>
+            </form>
+            <form action="{% url 'accounts:request_respond' req.id 'decline' %}" method="post" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-danger">Decline</button>
+            </form>
+            {% elif req.status == 'accepted' %}
+              <span class="badge badge-success">Accepted</span>
+            {% else %}
+              <span class="badge badge-danger">Declined</span>
+            {% endif %}
+            <a href="{% url 'accounts:send_message' req.sender.id %}" class="btn btn-sm btn-outline-primary">Reply</a>
+          </div>
+        </div>
+        {% empty %}
+        <div class="card">
+          <div class="card-body text-center text-muted py-5">
+            No one has sent you a request yet.
+          </div>
+        </div>
+        {% endfor %}
       </main>
     </div>
   </div>

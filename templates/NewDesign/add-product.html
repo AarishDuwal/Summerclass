@@ -7,62 +7,118 @@
 <section class="section-content padding-y bg">
   <div class="container">
     <div class="row">
-      <aside class="col-md-3">
+      <aside class="col-md-3 mb-4">
         {% include 'NewDesign/_dashboard_sidebar.html' with active='add_product' %}
       </aside>
       <main class="col-md-9">
-        <article class="card">
-          <header class="card-header">
-            <strong>{% if editing %}Edit "{{ product.name }}"{% else %}Add a New Product{% endif %}</strong>
-          </header>
-          <div class="card-body">
-            <form method="post" enctype="multipart/form-data">
-              {% csrf_token %}
-              <div class="form-group">
-                <label>Product Name</label>
-                <input type="text" name="name" class="form-control" value="{{ product.name|default:'' }}" required />
+        <h3 class="mb-3">{% if editing %}Edit "{{ product.name }}"{% else %}Add a New Product{% endif %}</h3>
+
+        <div class="row">
+          <div class="col-lg-7">
+            <div class="card">
+              <div class="card-body">
+                <form method="post" enctype="multipart/form-data" id="productForm">
+                  {% csrf_token %}
+                  <div class="form-group">
+                    <label>Product Name</label>
+                    <input type="text" name="name" id="pf_name" class="form-control" value="{{ product.name|default:'' }}" required />
+                  </div>
+                  <div class="form-group">
+                    <label>Description</label>
+                    <textarea name="description" rows="4" class="form-control" required>{{ product.description|default:'' }}</textarea>
+                  </div>
+                  <div class="form-row">
+                    <div class="col form-group">
+                      <label>Price (Rs.)</label>
+                      <input type="number" step="0.01" name="price" id="pf_price" class="form-control" value="{{ product.price|default:'' }}" required />
+                    </div>
+                    <div class="col form-group">
+                      <label>Stock</label>
+                      <input type="number" name="stock" id="pf_stock" class="form-control" value="{{ product.stock|default:1 }}" required />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Category</label>
+                    <select name="category" id="pf_category" class="form-control" required>
+                      <option value="">Select a category</option>
+                      {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if product.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Product Image</label>
+                    <input type="file" name="product_image" id="pf_image" class="form-control-file" accept="image/*" />
+                  </div>
+                  {% if editing %}
+                    <p class="text-muted small">Saving changes will send this product back for admin re-approval.</p>
+                  {% else %}
+                    <p class="text-muted small">New listings are reviewed by an admin before appearing in the store.</p>
+                  {% endif %}
+                  <button type="submit" class="btn btn-primary">{% if editing %}Save Changes{% else %}Submit for Review{% endif %}</button>
+                </form>
               </div>
-              <div class="form-group">
-                <label>Description</label>
-                <textarea name="description" rows="4" class="form-control" required>{{ product.description|default:'' }}</textarea>
-              </div>
-              <div class="form-row">
-                <div class="col form-group">
-                  <label>Price (Rs.)</label>
-                  <input type="number" step="0.01" name="price" class="form-control" value="{{ product.price|default:'' }}" required />
-                </div>
-                <div class="col form-group">
-                  <label>Stock</label>
-                  <input type="number" name="stock" class="form-control" value="{{ product.stock|default:1 }}" required />
-                </div>
-              </div>
-              <div class="form-group">
-                <label>Category</label>
-                <select name="category" class="form-control" required>
-                  <option value="">Select a category</option>
-                  {% for cat in categories %}
-                    <option value="{{ cat.id }}" {% if product.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Product Image</label>
-                <input type="file" name="product_image" class="form-control-file" />
-                {% if product.product_image %}
-                  <img src="{{ product.product_image.url }}" class="img-sm mt-2 d-block" />
-                {% endif %}
-              </div>
-              {% if editing %}
-                <p class="text-muted small">Saving changes will send this product back for admin re-approval.</p>
-              {% else %}
-                <p class="text-muted small">New listings are reviewed by an admin before appearing in the store.</p>
-              {% endif %}
-              <button type="submit" class="btn btn-primary">{% if editing %}Save Changes{% else %}Submit for Review{% endif %}</button>
-            </form>
+            </div>
           </div>
-        </article>
+
+          <div class="col-lg-5">
+            <div class="card" style="position: sticky; top: 90px;">
+              <header class="card-header">Live Preview</header>
+              <div class="card-body">
+                <figure class="card card-product-grid" style="box-shadow:none; border:2px dashed #E2DDF7;">
+                  <div class="img-wrap" id="pf_preview_imgwrap">
+                    {% if product.product_image %}
+                      <img id="pf_preview_img" src="{{ product.product_image.url }}" />
+                    {% else %}
+                      <img id="pf_preview_img" src="{% static 'images/items/1.jpg' %}" />
+                    {% endif %}
+                  </div>
+                  <figcaption class="info-wrap">
+                    <div class="title" id="pf_preview_name">{{ product.name|default:"Your product name" }}</div>
+                    <div class="price mt-1" id="pf_preview_price">Rs. {{ product.price|default:"0.00" }}</div>
+                  </figcaption>
+                </figure>
+                <p class="text-muted small mt-3 mb-0">This is roughly how your listing will look in the Store once approved.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </main>
     </div>
   </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function () {
+    var nameInput = document.getElementById('pf_name');
+    var priceInput = document.getElementById('pf_price');
+    var imageInput = document.getElementById('pf_image');
+    var previewName = document.getElementById('pf_preview_name');
+    var previewPrice = document.getElementById('pf_preview_price');
+    var previewImg = document.getElementById('pf_preview_img');
+
+    if (nameInput) {
+      nameInput.addEventListener('input', function () {
+        previewName.textContent = nameInput.value || 'Your product name';
+      });
+    }
+    if (priceInput) {
+      priceInput.addEventListener('input', function () {
+        previewPrice.textContent = 'Rs. ' + (priceInput.value || '0.00');
+      });
+    }
+    if (imageInput) {
+      imageInput.addEventListener('change', function () {
+        var file = imageInput.files && imageInput.files[0];
+        if (file) {
+          var reader = new FileReader();
+          reader.onload = function (e) { previewImg.src = e.target.result; };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+  })();
+</script>
 {% endblock %}

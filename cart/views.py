@@ -20,6 +20,10 @@ def cart_add(request, product_id):
     product_obj = get_object_or_404(Product, id=product_id)
     next_url = request.POST.get('next') or 'cart:cart'
 
+    if request.user.is_authenticated and product_obj.owner_id == request.user.id:
+        messages.error(request, "You can't buy your own product.")
+        return redirect(next_url)
+
     is_owner = request.user.is_authenticated and product_obj.owner_id == request.user.id
     if not product_obj.is_live and not (is_owner or request.user.is_staff):
         messages.error(request, 'This product is not currently available.')
@@ -52,6 +56,7 @@ def cart_update(request, product_id):
     return redirect('cart:cart')
 
 
+@require_POST
 def cart_remove(request, product_id):
     product_obj = get_object_or_404(Product, id=product_id)
     cart = Cart(request)
@@ -68,7 +73,12 @@ def checkout(request):
         return redirect('cart:cart')
 
     if request.method == 'POST':
-        # Re-check stock at checkout time — it may have changed since items were added.
+        # Re-check ownership and stock at checkout time — either may have
+        # changed since the item was added to the cart.
+        for item in cart:
+            if item['product'].owner_id == request.user.id:
+                messages.error(request, f'You can\'t buy your own product ("{item["product"].name}"). Please remove it from your cart.')
+                return redirect('cart:cart')
         for item in cart:
             if item['quantity'] > max(item['product'].stock, 0):
                 messages.error(

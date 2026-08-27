@@ -22,10 +22,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-c35zz0apozft3hn81%6wo2(nnfy3p3!(m0nxnec2kivjgbg0*a'
+# Reads from the DJANGO_SECRET_KEY env var in production. The fallback below
+# is ONLY for local development — set a real, private key on Render.
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
+    'django-insecure-local-dev-only-c35zz0apozft3hn81%6wo2(nnfy3p3!'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Defaults to OFF (safe) unless DJANGO_DEBUG=True is explicitly set.
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = [
     'summerclass-cu1t.onrender.com',
@@ -58,6 +64,8 @@ INSTALLED_APPS = [
     'sitesetting.apps.SitesettingConfig',
     'cart.apps.CartConfig',
     'accounts.apps.AccountsConfig',
+    'security.apps.SecurityConfig',
+    'chatbot.apps.ChatbotConfig',
 ]
 
 MIDDLEWARE = [
@@ -144,7 +152,16 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Django 6 removed the legacy STATICFILES_STORAGE setting in favor of STORAGES.
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 
 #media files settings
 MEDIA_URL = '/media/'
@@ -203,3 +220,20 @@ JAZZMIN_UI_TWEAKS = {
     "brand_colour": "navbar-primary",
     "accent": "accent-primary",
 }
+
+# Email (used for the "forgot password" flow).
+# Set these env vars on Render to send real emails via SMTP (e.g. Gmail,
+# SendGrid, Mailgun). Without them, emails are printed to the Render logs
+# instead of actually being delivered — fine for testing the flow, but not
+# for real users resetting their password.
+EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
+if EMAIL_HOST:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+    EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
+    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    DEFAULT_FROM_EMAIL = 'noreply@aarish.com.np'

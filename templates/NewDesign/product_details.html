@@ -7,46 +7,41 @@
 <section class="section-content padding-y">
   <div class="container">
     <div class="row">
-      <aside class="col-md-6">
-        <div class="card mainImage">
+      <div class="col-md-6">
+        <div class="product-gallery">
           {% if product.product_image %}
             <img class="img-fluid" src="{{ product.product_image.url }}" />
           {% else %}
             <img class="img-fluid" src="{% static 'images/items/1.jpg' %}" />
           {% endif %}
         </div>
-      </aside>
+      </div>
       <!-- col.// -->
-      <main class="col-md-6">
-        <article class="product-info-aside">
+      <div class="col-md-6">
+        <div class="card buy-box">
+          <span class="badge badge-{% if product.category %}info{% else %}secondary{% endif %} mb-2" style="align-self:flex-start;">
+            {{ product.category.name|default:"Uncategorized" }}
+          </span>
           <h2 class="title">{{ product.name }}</h2>
-          <div class="rating-wrap my-3">
-            <span class="badge badge-{% if product.category %}info{% else %}secondary{% endif %}">
-              {{ product.category.name|default:"Uncategorized" }}
-            </span>
-          </div>
 
-          <div class="mb-3">
+          <div class="my-3">
             <var class="price h3">Rs. {{ product.price }}</var>
           </div>
 
-          <p>
+          <div class="stock-line">
             {% if product.stock > 0 %}
-              <span class="text-success"><i class="fa fa-check"></i> In stock ({{ product.stock }} available)</span>
+              <span class="text-success"><i class="fa fa-check"></i> In stock — {{ product.stock }} available</span>
             {% else %}
               <span class="text-danger"><i class="fa fa-times"></i> Out of stock</span>
             {% endif %}
-          </p>
+          </div>
 
-          <p>{{ product.description }}</p>
-
-          {% if product.owner %}
-          <p class="text-muted small">
-            Sold by <strong>{{ product.owner.first_name|default:product.owner.username }}</strong>
-          </p>
-          {% endif %}
-
-          {% if product.stock > 0 %}
+          {% if user.is_authenticated and product.owner_id == user.id %}
+          <div class="alert alert-info mb-0">
+            <i class="fa fa-info-circle"></i> This is your own listing — you can't buy it.
+            <a href="{% url 'edit_product' product.id %}" class="ml-1">Edit it instead</a>
+          </div>
+          {% elif product.stock > 0 %}
           <form action="{% url 'cart:add' product.id %}" method="post" class="form-row">
             {% csrf_token %}
             <input type="hidden" name="next" value="{% url 'product_detail' product.id %}" />
@@ -54,20 +49,29 @@
               <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="form-control" />
             </div>
             <div class="col-8 col-md-9">
-              <button type="submit" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> Add to cart</button>
+              <button type="submit" class="btn btn-primary btn-block"><i class="fa fa-shopping-cart"></i> Add to cart</button>
             </div>
           </form>
           {% else %}
           <button class="btn btn-secondary" disabled>Out of stock</button>
           {% endif %}
 
-          {% if product.owner and user.is_authenticated and product.owner_id != user.id %}
-          <div class="mt-3 pt-3 border-top">
-            <a href="{% url 'accounts:send_message' product.owner.id %}" class="btn btn-outline-primary btn-sm">
-              Message Seller
-            </a>
-            <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="collapse" data-target="#contactSellerForm">
-              Send Request
+          {% if product.owner %}
+          <div class="seller-mini-card">
+            <div class="seller-avatar">{{ product.owner.first_name|default:product.owner.username|slice:":1"|upper }}</div>
+            <div class="flex-grow-1">
+              <div style="font-weight:700; font-size:0.9rem;">{{ product.owner.first_name|default:product.owner.username }}</div>
+              <div style="font-size:0.78rem; color:var(--text-muted);">Seller</div>
+            </div>
+            {% if user.is_authenticated and product.owner_id != user.id %}
+            <a href="{% url 'accounts:send_message' product.owner.id %}" class="btn btn-sm btn-outline-primary">Message</a>
+            {% endif %}
+          </div>
+
+          {% if user.is_authenticated and product.owner_id != user.id %}
+          <div class="mt-2">
+            <button type="button" class="btn btn-outline-secondary btn-sm btn-block" data-toggle="collapse" data-target="#contactSellerForm">
+              Send a Request / Offer
             </button>
             <form id="contactSellerForm" class="collapse mt-2" action="{% url 'accounts:send_product_request' product.id %}" method="post">
               {% csrf_token %}
@@ -78,12 +82,26 @@
             </form>
           </div>
           {% endif %}
-        </article>
-        <!-- product-info-aside .// -->
-      </main>
+          {% endif %}
+        </div>
+      </div>
       <!-- col.// -->
     </div>
     <!-- row.// -->
+
+    <div class="row">
+      <div class="col-12">
+        <div class="detail-block">
+          <h5>Description</h5>
+          <p>{{ product.description }}</p>
+        </div>
+        <div class="trust-bar">
+          <div class="trust-item"><i class="fa fa-comments"></i> Message the seller directly</div>
+          <div class="trust-item"><i class="fa fa-handshake"></i> Send an offer before you buy</div>
+          <div class="trust-item"><i class="fa fa-shield-alt"></i> Listings reviewed before going live</div>
+        </div>
+      </div>
+    </div>
   </div>
   <!-- container.// -->
 </section>
@@ -93,35 +111,18 @@
 <section class="section-name padding-y-sm">
   <div class="container">
     <header class="section-heading">
+      <a href="{% url 'products' %}" class="btn btn-outline-primary float-right">See all</a>
       <h3 class="section-title">You may also like</h3>
-      <a href="{% url 'products' %}" class="btn btn-outline-primary">See all</a>
     </header>
-    <!-- sect-heading -->
 
     <div class="row">
       {% for item in related_products %}
-      <div class="col-md-3">
-        <div class="card card-product-grid">
-          <a href="{% url 'product_detail' item.id %}" class="img-wrap">
-            {% if item.product_image %}
-              <img src="{{ item.product_image.url }}" />
-            {% else %}
-              <img src="{% static 'images/items/1.jpg' %}" />
-            {% endif %}
-          </a>
-          <figcaption class="info-wrap">
-            <a href="{% url 'product_detail' item.id %}" class="title">{{ item.name }}</a>
-            <div class="price mt-1">Rs. {{ item.price }}</div>
-          </figcaption>
-        </div>
+      <div class="col-6 col-md-3">
+        {% include 'NewDesign/_product_card.html' %}
       </div>
-      <!-- col.// -->
       {% endfor %}
     </div>
-    <!-- row.// -->
   </div>
-  <!-- container // -->
 </section>
-<!-- ========================= SECTION  END// ========================= -->
 {% endif %}
 {% endblock %}

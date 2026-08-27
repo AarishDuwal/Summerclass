@@ -4,110 +4,71 @@
 {% block title %}One of the Biggest Online Shopping Platform{% endblock %}
 
 {% block content %}
-    <!-- ========================= SECTION HERO ========================= -->
-    <section class="section-intro">
-      <div class="container" style="position:relative;">
-        <div class="row align-items-center">
-          <div class="col-lg-6">
-            <span class="hero-eyebrow"><i class="fa fa-graduation-cap"></i> Built by Islington College</span>
-            <h1 style="font-size:2.9rem; line-height:1.12; color:#fff; margin-bottom:1rem;">
-              Buy bold. Sell smart.<br /><span style="color:var(--gold);">Shop campus.</span>
-            </h1>
-            <p style="color:rgba(255,255,255,.75); font-size:1.08rem; margin-bottom:1.75rem; max-width:460px;">
-              The marketplace built for Islington College — find deals from fellow students and staff, or list your own in minutes.
-            </p>
-            <div class="d-flex flex-wrap" style="gap:.75rem;">
-              <a href="{% url 'products' %}" class="btn btn-lg btn-primary">
-                Browse the store <i class="fa fa-arrow-right ml-1"></i>
-              </a>
-              {% if not user.is_authenticated %}
-              <a href="{% url 'accounts:register' %}" class="btn btn-lg" style="background:transparent; border-color:rgba(255,255,255,.35); color:#fff;">
-                Start selling
-              </a>
-              {% endif %}
-            </div>
-          </div>
-          <div class="col-lg-6 d-none d-lg-block">
-            <div class="intro-banner-wrap">
-              <img src="{% static 'images/banners/2.jpg' %}" class="img-fluid" />
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- container //  -->
-    </section>
-    <!-- ========================= SECTION HERO END// ========================= -->
-
-    <!-- ========================= SECTION PERKS ========================= -->
-    <section class="padding-y-sm" style="background:var(--ink);">
+    <!-- ========================= HERO ========================= -->
+    <section class="section-intro padding-y-sm">
       <div class="container">
-        <div class="row">
-          <div class="col-md-4 mb-3 mb-md-0">
-            <div class="perk-card">
-              <div class="perk-icon"><i class="fa fa-bolt"></i></div>
-              <h4>Fast listings</h4>
-              <p>List a product in under a minute.</p>
-            </div>
-          </div>
-          <div class="col-md-4 mb-3 mb-md-0">
-            <div class="perk-card">
-              <div class="perk-icon"><i class="fa fa-shield-alt"></i></div>
-              <h4>Verified sellers</h4>
-              <p>Every listing is reviewed before it goes live.</p>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="perk-card">
-              <div class="perk-icon"><i class="fa fa-comments"></i></div>
-              <h4>Direct messaging</h4>
-              <p>Chat with sellers before you buy.</p>
-            </div>
-          </div>
+        <div class="hero">
+          <span class="hero-badge">✨ Islington Marketplace</span>
+          <h1>Buy it, sell it,<br>find it here.</h1>
+          <p>Books, gadgets, clothes and more — listed by real people, priced to move.</p>
+          <a href="{% url 'products' %}" class="btn btn-primary">Start Shopping</a>
         </div>
       </div>
     </section>
-    <!-- ========================= SECTION PERKS END// ========================= -->
 
-    <!-- ========================= SECTION  ========================= -->
-    <section class="section-name padding-y">
+    <!-- ========================= CATEGORY TILES ========================= -->
+    {% if categories %}
+    <section class="padding-y-sm">
+      <div class="container">
+        <h3 class="section-title mb-3">Shop by category</h3>
+        <div class="category-tiles">
+          {% for cat in categories %}
+          <a href="{% url 'products' %}?category={{ cat.id }}" class="category-tile">
+            <div class="tile-icon"><i class="fa fa-tag"></i></div>
+            {{ cat.name }}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- ========================= POPULAR PRODUCTS ========================= -->
+    <section class="section-name padding-y-sm">
       <div class="container">
         <header class="section-heading">
-          <h3 class="section-title">🔥 Popular products</h3>
-          <a href="{% url 'products' %}" class="btn btn-outline-primary">See all</a>
+          <a href="{% url 'products' %}" class="btn btn-outline-primary float-right">See all</a>
+          <h3 class="section-title">Popular products</h3>
         </header>
-        <!-- sect-heading -->
 
         <div class="row">
           {% for item in products|slice:":8" %}
-          <div class="col-lg-3 col-md-4 col-6 mb-4">
-            <div class="card card-product-grid">
-              <a href="{% url 'product_detail' item.id %}" class="img-wrap" style="position:relative;">
-                {% if item.product_image %}
-                  <img src="{{ item.product_image.url }}" />
-                {% else %}
-                  <img src="{% static 'images/items/1.jpg' %}" />
-                {% endif %}
-                {% if item.stock <= 0 %}
-                  <span class="badge badge-secondary" style="position:absolute; top:8px; right:8px;">Out of stock</span>
-                {% endif %}
-              </a>
-              <figcaption class="info-wrap">
-                <a href="{% url 'product_detail' item.id %}" class="title">{{ item.name }}</a>
-                <div class="price mt-1">Rs. {{ item.price }}</div>
-                <!-- price-wrap.// -->
-              </figcaption>
-            </div>
+          <div class="col-md-3">
+            {% include 'NewDesign/_product_card.html' %}
           </div>
-          <!-- col.// -->
           {% empty %}
           <div class="col-12">
             <p class="text-muted">No products yet — check back soon.</p>
           </div>
           {% endfor %}
         </div>
-        <!-- row.// -->
       </div>
-      <!-- container // -->
     </section>
-    <!-- ========================= SECTION  END// ========================= -->
+
+    <!-- ========================= SELLER CTA ========================= -->
+    <section class="padding-y-sm">
+      <div class="container">
+        <div class="seller-cta">
+          <div>
+            <h3>Got something to sell?</h3>
+            <p class="mb-0">List it in minutes. Books, electronics, clothes — anything goes.</p>
+          </div>
+          {% if user.is_authenticated %}
+            <a href="{% url 'add_product' %}" class="btn btn-primary">+ Add a Product</a>
+          {% else %}
+            <a href="{% url 'accounts:register' %}" class="btn btn-primary">Get Started →</a>
+          {% endif %}
+        </div>
+      </div>
+    </section>
 {% endblock %}

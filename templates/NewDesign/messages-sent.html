@@ -7,39 +7,26 @@
 <section class="section-content padding-y bg">
   <div class="container">
     <div class="row">
-      <aside class="col-md-3">
+      <aside class="col-md-3 mb-4">
         {% include 'NewDesign/_dashboard_sidebar.html' with active='messages_sent' %}
       </aside>
       <main class="col-md-9">
-        <article class="card">
-          <header class="card-header"><strong>Sent Messages</strong></header>
-          <div class="card-body">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>To</th>
-                  <th>Subject</th>
-                  <th>Message</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for msg in message_list %}
-                <tr>
-                  <td>{{ msg.recipient.first_name|default:msg.recipient.username }}</td>
-                  <td>{{ msg.subject|default:"(no subject)" }}</td>
-                  <td>{{ msg.body|truncatechars:60 }}</td>
-                  <td>{{ msg.created_at|date:"M d, Y" }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                  <td colspan="4" class="text-center text-muted py-4">You haven't sent any messages yet.</td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+        <h3 class="mb-3">Sent Messages</h3>
+
+        {% for msg in message_list %}
+        <div class="list-row">
+          <div class="list-row-avatar">{{ msg.recipient.first_name|default:msg.recipient.username|slice:":1"|upper }}</div>
+          <div class="list-row-body">
+            <div class="list-row-title">To {{ msg.recipient.first_name|default:msg.recipient.username }}</div>
+            <div class="list-row-sub">{{ msg.subject|default:"(no subject)" }} · {{ msg.created_at|date:"M d, Y" }}</div>
+            <div class="mt-1 small">{{ msg.body|truncatechars:80 }}</div>
           </div>
-        </article>
+        </div>
+        {% empty %}
+        <div class="card">
+          <div class="card-body text-center text-muted py-5">You haven't sent any messages yet.</div>
+        </div>
+        {% endfor %}
       </main>
     </div>
   </div>

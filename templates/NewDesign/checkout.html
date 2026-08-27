@@ -7,6 +7,7 @@
 <section class="section-content padding-y bg">
   <div class="container">
     <!-- ============================ COMPONENT 1 ================================= -->
+    {% include 'NewDesign/_checkout_steps.html' with step='checkout' %}
     <form action="{% url 'cart:checkout' %}" method="POST">
       {% csrf_token %}
       <div class="row">
@@ -70,42 +71,23 @@
         <aside class="col-lg-6">
           <div class="card">
             <div class="card-body">
-              <table class="table table-borderless table-shopping-cart">
-                <thead class="text-muted">
-                  <tr class="small text-uppercase">
-                    <th scope="col">Product</th>
-                    <th scope="col" width="120">Quantity</th>
-                    <th scope="col" width="120">Price</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for item in cart %}
-                  <tr>
-                    <td>
-                      <figure class="itemside align-items-center">
-                        <div class="aside">
-                          {% if item.product.product_image %}
-                            <img src="{{ item.product.product_image.url }}" class="img-sm" />
-                          {% else %}
-                            <img src="{% static 'images/items/1.jpg' %}" class="img-sm" />
-                          {% endif %}
-                        </div>
-                        <figcaption class="info">
-                          <span class="title text-dark">{{ item.product.name }}</span>
-                        </figcaption>
-                      </figure>
-                    </td>
-                    <td><label>{{ item.quantity }}</label></td>
-                    <td>
-                      <div class="price-wrap">
-                        <var class="price">Rs. {{ item.subtotal }}</var>
-                        <small class="text-muted"> Rs. {{ item.price }} each </small>
-                      </div>
-                    </td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
+              <h6 class="text-muted text-uppercase small mb-2">Order Summary</h6>
+              {% for item in cart %}
+              <div class="summary-line">
+                <div class="summary-thumb">
+                  {% if item.product.product_image %}
+                    <img src="{{ item.product.product_image.url }}" />
+                  {% else %}
+                    <img src="{% static 'images/items/1.jpg' %}" />
+                  {% endif %}
+                </div>
+                <div class="summary-info">
+                  <div class="name">{{ item.product.name }}</div>
+                  <div class="qty">Qty {{ item.quantity }} · Rs. {{ item.price }} each</div>
+                </div>
+                <var class="price">Rs. {{ item.subtotal }}</var>
+              </div>
+              {% endfor %}
 
               <dl class="dlist-align">
                 <dt>Total price:</dt>

@@ -1,39 +1,77 @@
-<ul class="list-group">
-  <a class="list-group-item {% if active == 'dashboard' %}active{% endif %}" href="{% url 'accounts:dashboard' %}">
-    <i class="fa fa-th-large"></i> Dashboard
+<div class="dash-sidebar">
+  <div class="dash-user">
+    <div class="dash-avatar">{{ user.first_name|default:user.username|slice:":1"|upper }}</div>
+    <div>
+      <div class="dash-name">{{ user.first_name|default:user.username }}</div>
+      <div style="font-size:0.75rem; color:rgba(255,255,255,0.5);">{{ user.email }}</div>
+    </div>
+  </div>
+
+  <a class="dash-link {% if active == 'dashboard' %}active{% endif %}" href="{% url 'accounts:dashboard' %}">
+    <i class="fa fa-th-large"></i> Overview
   </a>
-  <a class="list-group-item {% if active == 'my_products' %}active{% endif %}" href="{% url 'my_products' %}">
-    <i class="fa fa-box"></i> My Products
-  </a>
-  <a class="list-group-item {% if active == 'add_product' %}active{% endif %}" href="{% url 'add_product' %}">
-    <i class="fa fa-plus-circle"></i> Add Product
-  </a>
-  <a class="list-group-item {% if active == 'my_orders' %}active{% endif %}" href="{% url 'accounts:my_orders' %}">
-    <i class="fa fa-shopping-bag"></i> My Orders
-  </a>
-  <a class="list-group-item {% if active == 'my_sales' %}active{% endif %}" href="{% url 'accounts:my_sales' %}">
-    <i class="fa fa-chart-line"></i> My Sales
-  </a>
-  <a class="list-group-item {% if active == 'requests_sent' %}active{% endif %}" href="{% url 'accounts:requests_sent' %}">
-    <i class="fa fa-paper-plane"></i> My Sent Requests
-  </a>
-  <a class="list-group-item {% if active == 'requests_received' %}active{% endif %}" href="{% url 'accounts:requests_received' %}">
-    <i class="fa fa-inbox"></i> My Received Requests
-  </a>
-  <a class="list-group-item {% if active == 'messages_inbox' %}active{% endif %}" href="{% url 'accounts:messages_inbox' %}">
-    <i class="fa fa-envelope"></i> Messages
-  </a>
-  <a class="list-group-item {% if active == 'messages_sent' %}active{% endif %}" href="{% url 'accounts:messages_sent' %}">
-    <i class="fa fa-envelope-open-text"></i> Sent
-  </a>
-  <a class="list-group-item {% if active == 'edit_profile' %}active{% endif %}" href="{% url 'accounts:edit_profile' %}">
-    <i class="fa fa-user-edit"></i> Edit Profile
-  </a>
-  <a class="list-group-item {% if active == 'change_password' %}active{% endif %}" href="{% url 'accounts:change_password' %}">
-    <i class="fa fa-key"></i> Change Password
-  </a>
-</ul>
-<br />
-<a class="btn btn-light btn-block" href="{% url 'accounts:logout' %}">
-  <i class="fa fa-power-off"></i> <span class="text">Log out</span>
-</a>
+
+  <button class="dash-group-toggle" data-toggle="collapse" data-target="#dashGroupSelling" aria-expanded="true">
+    <span><i class="fa fa-store" style="margin-right:6px;"></i>Selling</span>
+    <i class="fa fa-chevron-down"></i>
+  </button>
+  <div class="collapse show" id="dashGroupSelling">
+    <a class="dash-link {% if active == 'my_products' %}active{% endif %}" href="{% url 'my_products' %}">
+      <i class="fa fa-box"></i> My Products
+    </a>
+    <a class="dash-link {% if active == 'add_product' %}active{% endif %}" href="{% url 'add_product' %}">
+      <i class="fa fa-plus-circle"></i> Add Product
+    </a>
+    <a class="dash-link {% if active == 'my_sales' %}active{% endif %}" href="{% url 'accounts:my_sales' %}">
+      <i class="fa fa-chart-line"></i> My Sales
+    </a>
+  </div>
+
+  <button class="dash-group-toggle" data-toggle="collapse" data-target="#dashGroupBuying" aria-expanded="true">
+    <span><i class="fa fa-shopping-bag" style="margin-right:6px;"></i>Buying</span>
+    <i class="fa fa-chevron-down"></i>
+  </button>
+  <div class="collapse show" id="dashGroupBuying">
+    <a class="dash-link {% if active == 'my_orders' %}active{% endif %}" href="{% url 'accounts:my_orders' %}">
+      <i class="fa fa-receipt"></i> My Orders
+    </a>
+    <a class="dash-link {% if active == 'requests_sent' %}active{% endif %}" href="{% url 'accounts:requests_sent' %}">
+      <i class="fa fa-paper-plane"></i> Sent Requests
+    </a>
+  </div>
+
+  <button class="dash-group-toggle" data-toggle="collapse" data-target="#dashGroupInbox" aria-expanded="true">
+    <span><i class="fa fa-inbox" style="margin-right:6px;"></i>Inbox</span>
+    <i class="fa fa-chevron-down"></i>
+  </button>
+  <div class="collapse show" id="dashGroupInbox">
+    <a class="dash-link {% if active == 'requests_received' %}active{% endif %}" href="{% url 'accounts:requests_received' %}">
+      <i class="fa fa-comment-dollar"></i> Received Requests
+    </a>
+    <a class="dash-link {% if active == 'messages_inbox' %}active{% endif %}" href="{% url 'accounts:messages_inbox' %}">
+      <i class="fa fa-envelope"></i> Messages
+    </a>
+    <a class="dash-link {% if active == 'messages_sent' %}active{% endif %}" href="{% url 'accounts:messages_sent' %}">
+      <i class="fa fa-paper-plane"></i> Sent
+    </a>
+  </div>
+
+  <button class="dash-group-toggle" data-toggle="collapse" data-target="#dashGroupAccount" aria-expanded="true">
+    <span><i class="fa fa-user-cog" style="margin-right:6px;"></i>Account</span>
+    <i class="fa fa-chevron-down"></i>
+  </button>
+  <div class="collapse show" id="dashGroupAccount">
+    <a class="dash-link {% if active == 'edit_profile' %}active{% endif %}" href="{% url 'accounts:edit_profile' %}">
+      <i class="fa fa-id-card"></i> Edit Profile
+    </a>
+    <a class="dash-link {% if active == 'change_password' %}active{% endif %}" href="{% url 'accounts:change_password' %}">
+      <i class="fa fa-key"></i> Change Password
+    </a>
+  </div>
+
+  <div class="dash-logout">
+    <a class="dash-link" href="{% url 'accounts:logout' %}">
+      <i class="fa fa-power-off"></i> Log out
+    </a>
+  </div>
+</div>

@@ -4,64 +4,51 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<section class="section-pagetop bg">
-  <div class="container">
-    <h2 class="title-page">Welcome back, {{ user.first_name|default:user.username }} 👋</h2>
-    <p class="mb-0" style="color:rgba(255,255,255,.7); font-weight:500;">Here's what's happening with your account.</p>
-  </div>
-</section>
-
 <section class="section-content padding-y bg">
   <div class="container">
     <div class="row">
-      <aside class="col-md-3 mb-4 mb-md-0">
+      <aside class="col-md-3 mb-4">
         {% include 'NewDesign/_dashboard_sidebar.html' with active='dashboard' %}
       </aside>
       <main class="col-md-9">
+        <h3 class="mb-3">Hey, {{ user.first_name|default:user.username }} 👋</h3>
+
         <div class="row">
-          <div class="col-md-4 mb-4">
-            <div class="stat-card">
-              <div class="stat-icon"><i class="fa fa-box"></i></div>
-              <div class="stat-value">{{ my_products_count }}</div>
+          <div class="col-md-4 mb-3">
+            <div class="stat-card stat-indigo">
               <div class="stat-label">My Products</div>
-              <a href="{% url 'my_products' %}">View Products <i class="fa fa-arrow-right"></i></a>
+              <div class="stat-value">{{ my_products_count }}</div>
+              <a href="{% url 'my_products' %}">View Products →</a>
             </div>
           </div>
-          <div class="col-md-4 mb-4">
-            <div class="stat-card">
-              <div class="stat-icon"><i class="fa fa-shopping-bag"></i></div>
-              <div class="stat-value">{{ my_orders_count }}</div>
+          <div class="col-md-4 mb-3">
+            <div class="stat-card stat-coral">
               <div class="stat-label">My Orders</div>
-              <a href="{% url 'accounts:my_orders' %}">View Orders <i class="fa fa-arrow-right"></i></a>
+              <div class="stat-value">{{ my_orders_count }}</div>
+              <a href="{% url 'accounts:my_orders' %}">View Orders →</a>
             </div>
           </div>
-          <div class="col-md-4 mb-4">
-            <div class="stat-card">
-              <div class="stat-icon"><i class="fa fa-chart-line"></i></div>
-              <div class="stat-value">{{ my_sales_count }}</div>
+          <div class="col-md-4 mb-3">
+            <div class="stat-card stat-mint">
               <div class="stat-label">My Sales</div>
-              <a href="{% url 'accounts:my_sales' %}">View Sales <i class="fa fa-arrow-right"></i></a>
+              <div class="stat-value">{{ my_sales_count }}</div>
+              <a href="{% url 'accounts:my_sales' %}">View Sales →</a>
             </div>
           </div>
         </div>
-        <!-- row.// -->
 
-        <article class="card">
-          <header class="card-header">
-            <strong><i class="fa fa-box mr-2"></i>Product Overview</strong>
-          </header>
+        <article class="card mt-2">
+          <header class="card-header">Product Breakdown</header>
           <div class="card-body">
-            <div class="d-flex flex-wrap" style="gap:.6rem;">
-              <span class="badge badge-secondary">Total: {{ products_total }}</span>
+            <div class="d-flex flex-wrap" style="gap: 0.5rem;">
+              <span class="badge badge-info">Total: {{ products_total }}</span>
               <span class="badge badge-success">Approved: {{ products_approved }}</span>
               <span class="badge badge-warning">Pending: {{ products_pending }}</span>
               <span class="badge badge-primary">Active: {{ products_active }}</span>
               <span class="badge badge-secondary">Inactive: {{ products_inactive }}</span>
             </div>
-            <div class="mt-3">
-              <a class="btn btn-sm btn-outline-primary" href="{% url 'my_products' %}">Manage Products</a>
-              <a class="btn btn-sm btn-primary" href="{% url 'add_product' %}">Add Product</a>
-            </div>
+            <a class="btn btn-sm btn-outline-primary mt-3" href="{% url 'my_products' %}">Manage Products</a>
+            <a class="btn btn-sm btn-primary mt-3" href="{% url 'add_product' %}">+ Add Product</a>
           </div>
         </article>
       </main>

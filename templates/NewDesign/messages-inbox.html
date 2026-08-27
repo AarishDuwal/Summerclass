@@ -7,46 +7,32 @@
 <section class="section-content padding-y bg">
   <div class="container">
     <div class="row">
-      <aside class="col-md-3">
+      <aside class="col-md-3 mb-4">
         {% include 'NewDesign/_dashboard_sidebar.html' with active='messages_inbox' %}
       </aside>
       <main class="col-md-9">
-        <article class="card">
-          <header class="card-header"><strong>Inbox</strong></header>
-          <div class="card-body">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>From</th>
-                  <th>Subject</th>
-                  <th>Message</th>
-                  <th>Date</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for msg in message_list %}
-                <tr class="{% if not msg.is_read %}font-weight-bold{% endif %}">
-                  <td>{{ msg.sender.first_name|default:msg.sender.username }}</td>
-                  <td>{{ msg.subject|default:"(no subject)" }}</td>
-                  <td>{{ msg.body|truncatechars:60 }}</td>
-                  <td>{{ msg.created_at|date:"M d, Y" }}</td>
-                  <td class="text-right">
-                    {% if not msg.is_read %}
-                    <a href="{% url 'accounts:message_mark_read' msg.id %}" class="btn btn-sm btn-outline-secondary">Mark read</a>
-                    {% endif %}
-                    <a href="{% url 'accounts:send_message' msg.sender.id %}" class="btn btn-sm btn-outline-primary">Reply</a>
-                  </td>
-                </tr>
-                {% empty %}
-                <tr>
-                  <td colspan="5" class="text-center text-muted py-4">Your inbox is empty.</td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+        <h3 class="mb-3">Inbox</h3>
+
+        {% for msg in message_list %}
+        <div class="list-row {% if not msg.is_read %}unread{% endif %}">
+          <div class="list-row-avatar">{{ msg.sender.first_name|default:msg.sender.username|slice:":1"|upper }}</div>
+          <div class="list-row-body">
+            <div class="list-row-title">{{ msg.sender.first_name|default:msg.sender.username }}</div>
+            <div class="list-row-sub">{{ msg.subject|default:"(no subject)" }} · {{ msg.created_at|date:"M d, Y" }}</div>
+            <div class="mt-1 small">{{ msg.body|truncatechars:80 }}</div>
           </div>
-        </article>
+          <div class="list-row-actions">
+            {% if not msg.is_read %}
+            <a href="{% url 'accounts:message_mark_read' msg.id %}" class="btn btn-sm btn-outline-secondary">Mark read</a>
+            {% endif %}
+            <a href="{% url 'accounts:send_message' msg.sender.id %}" class="btn btn-sm btn-outline-primary">Reply</a>
+          </div>
+        </div>
+        {% empty %}
+        <div class="card">
+          <div class="card-body text-center text-muted py-5">Your inbox is empty.</div>
+        </div>
+        {% endfor %}
       </main>
     </div>
   </div>

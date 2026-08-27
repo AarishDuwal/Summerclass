@@ -1,0 +1,35 @@
+{% load static %}
+<div class="card card-product-grid">
+  <div class="img-wrap">
+    <a href="{% url 'product_detail' item.id %}">
+      {% if item.product_image %}
+        <img src="{{ item.product_image.url }}" />
+      {% else %}
+        <img src="{% static 'images/items/1.jpg' %}" />
+      {% endif %}
+    </a>
+    {% if item.stock <= 0 %}
+      <span class="badge badge-secondary" style="position:absolute; top:8px; right:8px;">Out of stock</span>
+    {% elif user.is_authenticated and item.owner_id == user.id %}
+      <span class="badge badge-info" style="position:absolute; top:8px; right:8px;">Your listing</span>
+    {% endif %}
+    {% if not user.is_authenticated or item.owner_id != user.id %}
+    <div class="quick-add-form">
+      <form action="{% url 'cart:add' item.id %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="quantity" value="1" />
+        <input type="hidden" name="next" value="{{ request.path }}" />
+        {% if item.stock > 0 %}
+          <button type="submit"><i class="fa fa-shopping-cart"></i> Quick Add</button>
+        {% else %}
+          <button type="button" disabled>Out of Stock</button>
+        {% endif %}
+      </form>
+    </div>
+    {% endif %}
+  </div>
+  <figcaption class="info-wrap">
+    <a href="{% url 'product_detail' item.id %}" class="title">{{ item.name }}</a>
+    <div class="price mt-1">Rs. {{ item.price }}</div>
+  </figcaption>
+</div>

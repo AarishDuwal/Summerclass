@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .models import product, category
@@ -12,7 +13,7 @@ def products(request):
     if selected_category:
         products_qs = products_qs.filter(category_id=selected_category)
 
-    keyword = request.GET.get('q')
+    keyword = request.GET.get('q', '').strip()
     if keyword:
         products_qs = products_qs.filter(name__icontains=keyword)
 
@@ -23,12 +24,29 @@ def products(request):
         products_qs = products_qs.order_by('-price')
     elif sort == 'newest':
         products_qs = products_qs.order_by('-created_at')
+    else:
+        products_qs = products_qs.order_by('-created_at')
+
+    paginator = Paginator(products_qs, 12)
+    page_number = request.GET.get('page')
+    products_page = paginator.get_page(page_number)
+
+    # When a search turns up nothing (or very little), suggest something —
+    # rather than leaving the person on a dead end.
+    recommended_products = None
+    if keyword and paginator.count < 4:
+        seen_ids = [p.id for p in products_page]
+        recommended_products = product.objects.filter(
+            status=True, approval_status=product.APPROVAL_APPROVED
+        ).exclude(id__in=seen_ids).order_by('-created_at')[:8]
 
     return render(request, 'NewDesign/Store.html', {
-        'products': products_qs,
+        'products': products_page,
         'categories': category.objects.all(),
         'selected_category': int(selected_category) if selected_category else None,
         'selected_sort': sort or '',
+        'keyword': keyword,
+        'recommended_products': recommended_products,
     })
 
 
@@ -41,13 +59,23 @@ def product_detail(request, id):
         if not (is_owner or request.user.is_staff):
             return redirect('products')
 
-    related_products = product.objects.filter(
-        category=product_obj.category, status=True, approval_status=product.APPROVAL_APPROVED
-    ).exclude(id=product_obj.id)[:4]
+    # Recommendations: same category first, then fill with other live
+    # products so there's always something to show, not just an empty gap.
+    live_qs = product.objects.filter(
+        status=True, approval_status=product.APPROVAL_APPROVED
+    ).exclude(id=product_obj.id)
+
+    same_category = list(live_qs.filter(category=product_obj.category).order_by('-created_at')[:8])
+    if len(same_category) < 8:
+        fill_ids = [p.id for p in same_category]
+        fill = live_qs.exclude(id__in=fill_ids).order_by('-created_at')[:8 - len(same_category)]
+        related_products = same_category + list(fill)
+    else:
+        related_products = same_category
 
     return render(request, 'NewDesign/product_details.html', {
         'product': product_obj,
-        'related_products': related_products,
+        'related_products': related_products[:4],
     })
 
 

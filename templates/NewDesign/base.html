@@ -21,9 +21,17 @@
     <!-- Font awesome 5 -->
     <link href="{% static 'css/all.min.css' %}" type="text/css" rel="stylesheet" />
 
-    <!-- Campus Market design system -->
+    <!-- custom style -->
     <link href="{% static 'css/ui.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'css/responsive.css' %}" rel="stylesheet" media="only screen and (max-width: 1200px)" />
+
+    <!-- Theme fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Islington Marketplace theme -->
+    <link href="{% static 'css/theme.css' %}" rel="stylesheet" type="text/css" />
 
     <!-- custom javascript -->
     <script src="{% static 'js/script.js' %}" type="text/javascript"></script>
@@ -31,99 +39,77 @@
     {% block extra_css %}{% endblock %}
   </head>
   <body>
-    <!-- ========================= HEADER ========================= -->
-    <header class="site-header">
-      <!-- slim utility bar -->
-      <div class="top-bar d-none d-md-block">
-        <div class="container d-flex justify-content-between align-items-center">
-          <span><i class="fa fa-map-marker-alt mr-1"></i> Kathmandu, Nepal — Islington College</span>
-          <div>
-            <a href="mailto:info@islingtonmarketplace.com" class="mr-3"><i class="fa fa-envelope mr-1"></i> Email</a>
-            <a href="tel:+23213123"><i class="fa fa-phone mr-1"></i> Call us</a>
+    <div class="promo-bar">🎉 Buy and sell anything, from anyone, anywhere in Nepal — <span>list your first product free</span></div>
+    <header class="section-header" style="position: sticky; top: 0; z-index: 1030;">
+      <nav class="navbar navbar-expand-lg navbar-light" style="background: var(--white); box-shadow: var(--shadow-sm); padding: 0.65rem 0;">
+        <div class="container flex-wrap flex-lg-nowrap">
+          <a href="{% url 'home' %}" class="brand-wrap mr-3">
+            <img class="logo" src="{% static 'images/logo.png' %}" style="max-height:38px;" />
+          </a>
+
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTop4"
+            aria-controls="navbarTop4" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <div class="collapse navbar-collapse order-3 order-lg-1" id="navbarTop4">
+            <ul class="navbar-nav mr-3">
+              <li class="nav-item"><a href="{% url 'home' %}" class="nav-link">Home</a></li>
+              <li class="nav-item"><a href="{% url 'products' %}" class="nav-link">Store</a></li>
+              <li class="nav-item"><a href="{% url 'blogs' %}" class="nav-link">Blog</a></li>
+              <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i> Categories</a>
+                <div class="dropdown-menu">
+                  {% for cat in nav_categories %}
+                    <a class="dropdown-item" href="{% url 'products' %}?category={{ cat.id }}">{{ cat.name }}</a>
+                  {% empty %}
+                    <span class="dropdown-item text-muted">No categories yet</span>
+                  {% endfor %}
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="flex-grow-1 order-2 mx-lg-3 my-2 my-lg-0" style="min-width: 180px;">
+            <form action="{% url 'products' %}" method="get" class="search">
+              <div class="input-group w-100">
+                <input type="text" name="q" class="form-control" placeholder="Search products…" value="{{ request.GET.q }}" />
+                <div class="input-group-append">
+                  <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="order-4 order-lg-3 d-flex align-items-center">
+            <div class="widget-header">
+              {% if user.is_authenticated %}
+                <small class="title text-muted">Hi, {{ user.first_name|default:user.username }}!</small>
+                <div>
+                  <a href="{% url 'accounts:dashboard' %}">Dashboard</a>
+                  <span class="dark-transp"> | </span>
+                  <a href="{% url 'accounts:logout' %}">Logout</a>
+                </div>
+              {% else %}
+                <small class="title text-muted">Welcome guest!</small>
+                <div>
+                  <a href="{% url 'accounts:login' %}">Sign in</a>
+                  <span class="dark-transp"> | </span>
+                  <a href="{% url 'accounts:register' %}"> Register</a>
+                </div>
+              {% endif %}
+            </div>
+            <a href="{% url 'cart:cart' %}" class="widget-header pl-3 ml-3">
+              <div class="icon icon-sm rounded-circle border">
+                <i class="fa fa-shopping-cart"></i>
+              </div>
+              <span class="badge badge-pill badge-danger notify">{{ cart_item_count }}</span>
+            </a>
           </div>
         </div>
-      </div>
-
-      <section class="header-main">
-        <div class="container">
-          <nav class="navbar navbar-expand-lg p-0">
-            <a href="{% url 'home' %}" class="brand-wrap navbar-brand mr-lg-4">
-              <img class="logo" src="{% static 'images/logo.png' %}" />
-              <span class="brand-name">Islington <span>Marketplace</span></span>
-            </a>
-
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTop4"
-              aria-controls="navbarTop4" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarTop4">
-              <ul class="navbar-nav main-nav mr-lg-4">
-                <li class="nav-item">
-                  <a href="{% url 'home' %}" class="nav-link">Home</a>
-                </li>
-                <li class="nav-item">
-                  <a href="{% url 'products' %}" class="nav-link">Store</a>
-                </li>
-                <li class="nav-item">
-                  <a href="{% url 'blogs' %}" class="nav-link">Blog</a>
-                </li>
-              </ul>
-
-              <form action="{% url 'products' %}" method="get" class="search flex-grow-1 my-3 my-lg-0 mr-lg-3">
-                <div class="input-group w-100">
-                  <div class="input-group-prepend category-wrap dropdown">
-                    <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
-                      <i class="fa fa-bars"></i> <span class="d-none d-xl-inline">All category</span>
-                    </button>
-                    <div class="dropdown-menu">
-                      {% for cat in nav_categories %}
-                        <a class="dropdown-item" href="{% url 'products' %}?category={{ cat.id }}">{{ cat.name }}</a>
-                      {% empty %}
-                        <span class="dropdown-item text-muted">No categories yet</span>
-                      {% endfor %}
-                    </div>
-                  </div>
-                  <input type="text" name="q" class="form-control" placeholder="Search for anything…" />
-                  <div class="input-group-append">
-                    <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
-                  </div>
-                </div>
-              </form>
-
-              <div class="header-actions d-flex align-items-center">
-                <div class="widget-header mr-3">
-                  {% if user.is_authenticated %}
-                    <small class="title text-muted">Hi, {{ user.first_name|default:user.username }}!</small>
-                    <div>
-                      <a href="{% url 'accounts:dashboard' %}">Dashboard</a>
-                      <span class="dark-transp"> | </span>
-                      <a href="{% url 'accounts:logout' %}">Logout</a>
-                    </div>
-                  {% else %}
-                    <small class="title text-muted">Welcome guest!</small>
-                    <div>
-                      <a href="{% url 'accounts:login' %}">Sign in</a>
-                      <span class="dark-transp"> | </span>
-                      <a href="{% url 'accounts:register' %}"> Register</a>
-                    </div>
-                  {% endif %}
-                </div>
-                <a href="{% url 'cart:cart' %}" style="position:relative;">
-                  <div class="icon icon-sm">
-                    <i class="fa fa-shopping-cart"></i>
-                  </div>
-                  <span class="badge badge-pill badge-danger notify">{{ cart_item_count }}</span>
-                </a>
-              </div>
-            </div>
-            <!-- navbar-collapse .// -->
-          </nav>
-        </div>
-        <!-- container.// -->
-      </section>
+      </nav>
     </header>
-    <!-- ========================= HEADER END// ========================= -->
+    <!-- section-header.// -->
 
     {% if messages %}
       <div class="container mt-3">
@@ -140,59 +126,63 @@
     <!-- ========================= FOOTER ========================= -->
     <footer class="section-footer">
       <div class="container">
-        <div class="row mb-4">
-          <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
-            <a href="{% url 'home' %}" class="brand-wrap">
-              <img class="logo mb-2" src="{% static 'images/logo.png' %}" style="max-height:40px; filter:brightness(0) invert(1);" />
-            </a>
-            <p class="small mt-2" style="max-width:320px;">A bold marketplace for students and staff to buy, sell, and swap — built by Islington College.</p>
-            <div class="mt-3">
-              <a href="mailto:info@islingtonmarketplace.com" class="mr-3"><i class="fa fa-envelope-square fa-lg"></i></a>
-              <a href="tel:+23213123" class="mr-3"><i class="fa fa-phone-square-alt fa-lg"></i></a>
-              <a href="#"><i class="fab fa-facebook-square fa-lg"></i></a>
-            </div>
+        <div class="row py-4">
+          <div class="col-md-4 mb-4 mb-md-0">
+            <img class="logo mb-3" src="{% static 'images/logo.png' %}" style="max-height:34px; filter: brightness(0) invert(1);" />
+            <p style="color: rgba(255,255,255,0.6); max-width: 320px;">
+              Islington Marketplace — a place where anyone can list, browse, and buy: books, gadgets, clothes, and everything in between.
+            </p>
           </div>
-          <div class="col-lg-2 col-md-3 col-6 mb-4 mb-md-0">
-            <h6 class="text-uppercase small" style="letter-spacing:.05em;">Explore</h6>
-            <ul class="footer-links">
+          <div class="col-6 col-md-2 mb-4 mb-md-0">
+            <h6 style="color:var(--white);">Explore</h6>
+            <ul class="list-unstyled">
               <li><a href="{% url 'home' %}">Home</a></li>
               <li><a href="{% url 'products' %}">Store</a></li>
               <li><a href="{% url 'blogs' %}">Blog</a></li>
-              {% if user.is_authenticated %}<li><a href="{% url 'accounts:dashboard' %}">Dashboard</a></li>{% endif %}
             </ul>
           </div>
-          <div class="col-lg-3 col-md-3 col-6 mb-4 mb-md-0">
-            <h6 class="text-uppercase small" style="letter-spacing:.05em;">Categories</h6>
-            <ul class="footer-links">
-              {% for cat in nav_categories|slice:":5" %}
+          <div class="col-6 col-md-3 mb-4 mb-md-0">
+            <h6 style="color:var(--white);">Categories</h6>
+            <ul class="list-unstyled">
+              {% for cat in nav_categories %}
                 <li><a href="{% url 'products' %}?category={{ cat.id }}">{{ cat.name }}</a></li>
               {% empty %}
-                <li><span class="text-muted">Coming soon</span></li>
+                <li class="text-muted">No categories yet</li>
               {% endfor %}
             </ul>
           </div>
-          <div class="col-lg-3 col-md-12">
-            <h6 class="text-uppercase small" style="letter-spacing:.05em;">Get in touch</h6>
-            <ul class="footer-links">
-              <li><i class="fa fa-envelope mr-2"></i>info@islingtonmarketplace.com</li>
-              <li><i class="fa fa-phone mr-2"></i>+23213123</li>
-              <li><i class="fa fa-map-marker-alt mr-2"></i>Kathmandu, Nepal</li>
+          <div class="col-6 col-md-3">
+            <h6 style="color:var(--white);">Account</h6>
+            <ul class="list-unstyled">
+              {% if user.is_authenticated %}
+                <li><a href="{% url 'accounts:dashboard' %}">Dashboard</a></li>
+                <li><a href="{% url 'add_product' %}">Sell a Product</a></li>
+                <li><a href="{% url 'accounts:logout' %}">Logout</a></li>
+              {% else %}
+                <li><a href="{% url 'accounts:login' %}">Sign in</a></li>
+                <li><a href="{% url 'accounts:register' %}">Register</a></li>
+              {% endif %}
             </ul>
           </div>
         </div>
-        <section class="footer-bottom row align-items-center">
-          <div class="col-md-6">
-            <p class="mb-0 small">&copy; 2026 Islington Marketplace. All rights reserved.</p>
+
+        <section class="footer-bottom border-top row py-3" style="border-color: rgba(255,255,255,0.12) !important;">
+          <div class="col-md-8">
+            <p class="text-muted mb-0">&copy; 2026 Islington Marketplace</p>
           </div>
-          <div class="col-md-6 text-md-right">
-            <i class="fab fa-lg fa-cc-visa mr-2"></i>
-            <i class="fab fa-lg fa-cc-paypal mr-2"></i>
+          <div class="col-md-4 text-md-right text-muted">
+            <i class="fab fa-lg fa-cc-visa"></i>
+            <i class="fab fa-lg fa-cc-paypal"></i>
             <i class="fab fa-lg fa-cc-mastercard"></i>
           </div>
         </section>
       </div>
+      <!-- //container -->
     </footer>
     <!-- ========================= FOOTER END // ========================= -->
+
+    {% csrf_token %}
+    {% include 'NewDesign/_chatbot_widget.html' %}
 
     {% block extra_js %}{% endblock %}
   </body>

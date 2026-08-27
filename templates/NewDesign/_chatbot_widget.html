@@ -1,0 +1,93 @@
+{% load static %}
+<button class="chat-fab" id="chatFab" aria-label="Open product chat"><i class="fa fa-comment-dots"></i></button>
+
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-panel-header">
+    <span><i class="fa fa-magic"></i> Find something</span>
+    <button id="chatClose" aria-label="Close chat">&times;</button>
+  </div>
+  <div class="chat-panel-body" id="chatBody">
+    <div class="chat-bubble bot">
+      Hi! Tell me what you're looking for — a category, a keyword, a budget — and I'll suggest some products.
+    </div>
+  </div>
+  <form class="chat-panel-footer" id="chatForm">
+    <input type="text" id="chatInput" placeholder="e.g. cheap books" autocomplete="off" />
+    <button type="submit"><i class="fa fa-paper-plane"></i></button>
+  </form>
+</div>
+
+<script>
+(function () {
+  var fab = document.getElementById('chatFab');
+  var panel = document.getElementById('chatPanel');
+  var closeBtn = document.getElementById('chatClose');
+  var form = document.getElementById('chatForm');
+  var input = document.getElementById('chatInput');
+  var body = document.getElementById('chatBody');
+
+  function getCookie(name) {
+    var value = null;
+    document.cookie.split(';').forEach(function (part) {
+      var pair = part.trim().split('=');
+      if (pair[0] === name) value = decodeURIComponent(pair[1]);
+    });
+    return value;
+  }
+
+  function scrollToBottom() { body.scrollTop = body.scrollHeight; }
+
+  function addBubble(text, who) {
+    var div = document.createElement('div');
+    div.className = 'chat-bubble ' + who;
+    div.textContent = text;
+    body.appendChild(div);
+    scrollToBottom();
+  }
+
+  function addProducts(products) {
+    products.forEach(function (p) {
+      var a = document.createElement('a');
+      a.className = 'chat-product-mini';
+      a.href = p.url;
+      a.innerHTML =
+        '<img src="' + (p.image_url || '{% static "images/items/1.jpg" %}') + '" alt="">' +
+        '<span class="name">' + p.name + '</span>' +
+        '<span class="price">Rs. ' + p.price + '</span>';
+      body.appendChild(a);
+    });
+    scrollToBottom();
+  }
+
+  fab.addEventListener('click', function () {
+    panel.classList.toggle('open');
+    if (panel.classList.contains('open')) input.focus();
+  });
+  closeBtn.addEventListener('click', function () { panel.classList.remove('open'); });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var message = input.value.trim();
+    if (!message) return;
+    addBubble(message, 'user');
+    input.value = '';
+
+    fetch('{% url "chatbot:message" %}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken')
+      },
+      body: JSON.stringify({ message: message })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        addBubble(data.reply, 'bot');
+        if (data.products && data.products.length) addProducts(data.products);
+      })
+      .catch(function () {
+        addBubble("Sorry, something went wrong. Try again in a bit.", 'bot');
+      });
+  });
+})();
+</script>

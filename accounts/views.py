@@ -8,6 +8,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from cart.models import Order, OrderItem
 from products.models import product as Product
+from security.models import LoginAttempt
+from security.utils import get_client_ip
 
 from .models import Message, Profile, ProductRequest
 
@@ -23,8 +25,18 @@ def login_view(request):
         user = User.objects.filter(email__iexact=email).first()
 
         if user is None:
+            LoginAttempt.objects.create(
+                username=email, ip_address=get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                path=request.path, success=False,
+            )
             messages.error(request, 'Invalid email or password.')
         elif not user.is_active:
+            LoginAttempt.objects.create(
+                username=email, ip_address=get_client_ip(request),
+                user_agent=request.META.get('HTTP_USER_AGENT', ''),
+                path=request.path, success=False,
+            )
             messages.error(request, 'Your account is pending activation by an admin. Please check back later.')
         else:
             auth_user = authenticate(request, username=user.username, password=password)
@@ -150,7 +162,9 @@ def request_respond(request, request_id, action):
 def send_product_request(request, product_id):
     product_obj = get_object_or_404(Product, id=product_id)
     if request.method == 'POST':
-        if product_obj.owner_id == request.user.id:
+        if product_obj.owner_id is None:
+            messages.error(request, 'This product is managed by an admin and has no seller to contact directly.')
+        elif product_obj.owner_id == request.user.id:
             messages.error(request, "You can't send a request on your own product.")
         else:
             ProductRequest.objects.create(

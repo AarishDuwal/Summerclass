@@ -7,123 +7,97 @@
 <!-- ========================= SECTION PAGETOP ========================= -->
 <section class="section-pagetop bg">
   <div class="container">
-    <h2 class="title-page">🛍️ Our Store</h2>
-    <p class="mb-0" style="color:rgba(255,255,255,.7); font-weight:500;">Everything students are buying and selling right now.</p>
+    <h2 class="title-page">Our Store</h2>
   </div>
-  <!-- container //  -->
 </section>
-<!-- ========================= SECTION INTRO END// ========================= -->
 
 <!-- ========================= SECTION CONTENT ========================= -->
 <section class="section-content padding-y">
   <div class="container">
-    <div class="row">
-      <aside class="col-md-3">
-        <div class="card">
-          <article class="filter-group">
-            <header class="card-header">
-              <a href="#" data-toggle="collapse" data-target="#collapse_1" aria-expanded="true">
-                <i class="icon-control fa fa-chevron-down"></i>
-                <h6 class="title">Categories</h6>
-              </a>
-            </header>
-            <div class="filter-content collapse show" id="collapse_1">
-              <div class="card-body">
-                <ul class="list-menu">
-                  <li>
-                    <a href="{% url 'products' %}" class="{% if not selected_category %}font-weight-bold{% endif %}">
-                      All Products
-                    </a>
-                  </li>
-                  {% for cat in categories %}
-                  <li>
-                    <a href="{% url 'products' %}?category={{ cat.id }}"
-                       class="{% if selected_category == cat.id %}font-weight-bold{% endif %}">
-                      {{ cat.name }}
-                    </a>
-                  </li>
-                  {% endfor %}
-                </ul>
-              </div>
-              <!-- card-body.// -->
-            </div>
-          </article>
-          <!-- filter-group  .// -->
 
-          <article class="filter-group">
-            <header class="card-header">
-              <a href="#" data-toggle="collapse" data-target="#collapse_2" aria-expanded="true">
-                <i class="icon-control fa fa-chevron-down"></i>
-                <h6 class="title">Sort by price</h6>
-              </a>
-            </header>
-            <div class="filter-content collapse show" id="collapse_2">
-              <div class="card-body">
-                <ul class="list-menu">
-                  <li><a href="{% url 'products' %}?sort=price_asc{% if selected_category %}&category={{ selected_category }}{% endif %}">Price: Low to High</a></li>
-                  <li><a href="{% url 'products' %}?sort=price_desc{% if selected_category %}&category={{ selected_category }}{% endif %}">Price: High to Low</a></li>
-                  <li><a href="{% url 'products' %}?sort=newest{% if selected_category %}&category={{ selected_category }}{% endif %}">Newest Arrivals</a></li>
-                </ul>
-              </div>
-              <!-- card-body.// -->
-            </div>
-          </article>
-          <!-- filter-group .// -->
-        </div>
-        <!-- card.// -->
-      </aside>
-      <!-- col.// -->
-      <main class="col-md-9">
-        <header class="d-flex justify-content-between align-items-center mb-4">
-          <span class="badge badge-primary" style="font-size:.9rem;">{{ products|length }} product{{ products|length|pluralize }} found</span>
-        </header>
-
-        <div class="row">
-          {% for item in products %}
-          <div class="col-md-4 col-6 mb-4">
-            <figure class="card card-product-grid">
-              <div class="img-wrap" style="position:relative;">
-                <a href="{% url 'product_detail' item.id %}">
-                  {% if item.product_image %}
-                    <img src="{{ item.product_image.url }}" />
-                  {% else %}
-                    <img src="{% static 'images/items/1.jpg' %}" />
-                  {% endif %}
-                </a>
-                {% if item.stock <= 0 %}
-                  <span class="badge badge-secondary" style="position:absolute; top:8px; right:8px;">Out of stock</span>
-                {% endif %}
-              </div>
-              <!-- img-wrap.// -->
-              <figcaption class="info-wrap">
-                <div class="fix-height">
-                  <a href="{% url 'product_detail' item.id %}" class="title">{{ item.name }}</a>
-                  <div class="price-wrap mt-2">
-                    <span class="price">Rs. {{ item.price }}</span>
-                  </div>
-                  <!-- price-wrap.// -->
-                </div>
-                {% if item.stock > 0 %}
-                <a href="{% url 'product_detail' item.id %}" class="btn btn-block btn-primary">View Details</a>
-                {% else %}
-                <a href="{% url 'product_detail' item.id %}" class="btn btn-block btn-outline-secondary">View Details</a>
-                {% endif %}
-              </figcaption>
-            </figure>
+    <!-- Horizontal filter bar, replaces the old left sidebar -->
+    <div class="filter-bar">
+      <div class="row align-items-center">
+        <div class="col-md-9">
+          <div class="filter-chips">
+            <a href="{% url 'products' %}{% if selected_sort %}?sort={{ selected_sort }}{% endif %}"
+               class="filter-chip {% if not selected_category %}active{% endif %}">All</a>
+            {% for cat in categories %}
+            <a href="{% url 'products' %}?category={{ cat.id }}{% if selected_sort %}&sort={{ selected_sort }}{% endif %}"
+               class="filter-chip {% if selected_category == cat.id %}active{% endif %}">{{ cat.name }}</a>
+            {% endfor %}
           </div>
-          {% empty %}
-          <div class="col-12">
-            <p class="text-muted">No products match this filter yet.</p>
-          </div>
-          {% endfor %}
-          <!-- col.// -->
         </div>
-        <!-- row end.// -->
-      </main>
-      <!-- col.// -->
+        <div class="col-md-3 text-md-right mt-2 mt-md-0">
+          <form method="get" class="d-inline-block">
+            {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+            <select name="sort" class="form-control" onchange="this.form.submit()">
+              <option value="" {% if not selected_sort %}selected{% endif %}>Sort: Newest</option>
+              <option value="price_asc" {% if selected_sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+              <option value="price_desc" {% if selected_sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+            </select>
+          </form>
+        </div>
+      </div>
     </div>
+
+    <header class="border-bottom mb-4 pb-3">
+      {% if keyword %}
+        <span class="text-muted">{{ products.paginator.count }} result{{ products.paginator.count|pluralize }} for "<strong>{{ keyword }}</strong>"</span>
+      {% else %}
+        <span class="text-muted">{{ products.paginator.count }} product{{ products.paginator.count|pluralize }} found</span>
+      {% endif %}
+    </header>
+
+    <div class="row">
+      {% for item in products %}
+      <div class="col-6 col-md-3">
+        {% include 'NewDesign/_product_card.html' %}
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <p class="text-muted">No products match this filter yet.</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if products.paginator.num_pages > 1 %}
+    <nav aria-label="Store pagination" class="mt-4">
+      <ul class="pagination justify-content-center">
+        {% if products.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page={{ products.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_sort %}&sort={{ selected_sort }}{% endif %}">Previous</a></li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">Previous</span></li>
+        {% endif %}
+
+        {% for num in products.paginator.page_range %}
+          <li class="page-item {% if products.number == num %}active{% endif %}">
+            <a class="page-link" href="?page={{ num }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_sort %}&sort={{ selected_sort }}{% endif %}">{{ num }}</a>
+          </li>
+        {% endfor %}
+
+        {% if products.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_sort %}&sort={{ selected_sort }}{% endif %}">Next</a></li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">Next</span></li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+
+    {% if recommended_products %}
+    <div class="mt-5 pt-4" style="border-top: 2px solid #EDEAFB;">
+      <h4 class="section-title mb-3"><i class="fa fa-magic" style="color:var(--coral);"></i> You might also like</h4>
+      <div class="row">
+        {% for item in recommended_products %}
+        <div class="col-6 col-md-3">
+          {% include 'NewDesign/_product_card.html' %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
   </div>
-  <!-- container .//  -->
 </section>
-<!-- ========================= SECTION CONTENT END// ========================= -->
 {% endblock %}
