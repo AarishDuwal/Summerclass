@@ -29,6 +29,21 @@
             {% endif %}
           </div>
           <div class="price">Rs. {{ item.subtotal }}</div>
+          <div>
+            {% if item.order.status == 'placed' %}
+            <form method="post" action="{% url 'accounts:my_sales' %}" class="form-inline">
+              {% csrf_token %}
+              <input type="hidden" name="item_id" value="{{ item.id }}" />
+              <select name="fulfillment_status" class="form-control form-control-sm" onchange="this.form.submit()">
+                {% for value, label in item.FULFILLMENT_CHOICES %}
+                  <option value="{{ value }}" {% if item.fulfillment_status == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+            </form>
+            {% else %}
+              <span class="text-muted small">Awaiting payment</span>
+            {% endif %}
+          </div>
         </div>
         {% empty %}
         <div class="card">

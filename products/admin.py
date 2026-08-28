@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.shortcuts import redirect
+from django.urls import path, reverse
 from django.utils.html import format_html
 from .models import category, product
 
@@ -25,6 +27,7 @@ class ProductAdmin(admin.ModelAdmin):
         'approval_status',
         'status',
         'image_preview',
+        'quick_actions',
     )
 
     search_fields = ('name',)
@@ -51,6 +54,40 @@ class ProductAdmin(admin.ModelAdmin):
         return "No Image"
 
     image_preview.short_description = "Image"
+
+    def quick_actions(self, obj):
+        return format_html(
+            '<a class="button" href="{}">Approve</a>&nbsp;'
+            '<a class="button" style="background:#ba2121;color:#fff;" href="{}">Reject</a>',
+            reverse('admin:product_quick_approve', args=[obj.pk]),
+            reverse('admin:product_quick_reject', args=[obj.pk]),
+        )
+    quick_actions.short_description = 'Quick actions'
+
+    def get_urls(self):
+        custom = [
+            path(
+                '<int:pk>/quick-approve/',
+                self.admin_site.admin_view(self.quick_approve),
+                name='product_quick_approve',
+            ),
+            path(
+                '<int:pk>/quick-reject/',
+                self.admin_site.admin_view(self.quick_reject),
+                name='product_quick_reject',
+            ),
+        ]
+        return custom + super().get_urls()
+
+    def quick_approve(self, request, pk):
+        product.objects.filter(pk=pk).update(approval_status=product.APPROVAL_APPROVED)
+        self.message_user(request, 'Product approved.')
+        return redirect('admin:products_product_changelist')
+
+    def quick_reject(self, request, pk):
+        product.objects.filter(pk=pk).update(approval_status=product.APPROVAL_REJECTED)
+        self.message_user(request, 'Product rejected.')
+        return redirect('admin:products_product_changelist')
 
 
 admin.site.register(product, ProductAdmin)

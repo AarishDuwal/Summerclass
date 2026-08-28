@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'security.apps.SecurityConfig',
     'chatbot.apps.ChatbotConfig',
+    'payments.apps.PaymentsConfig',
 ]
 
 MIDDLEWARE = [
@@ -168,6 +169,33 @@ STORAGES = {
 #media files settings
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.environ.get('RAILWAY_VOLUME_MOUNT_PATH', BASE_DIR / 'media')
+
+# Base URL of this site, used to build payment gateway callback URLs.
+# Set SITE_URL in your environment (e.g. https://www.aarish.com.np) in production.
+SITE_URL = os.environ.get('SITE_URL', 'http://127.0.0.1:8000')
+
+# eSewa (ePay v2). Defaults below are eSewa's public shared sandbox
+# credentials — safe to leave as-is for testing. Override via environment
+# variables once you have real merchant credentials.
+ESEWA_SETTINGS = {
+    'PRODUCT_CODE': os.environ.get('ESEWA_PRODUCT_CODE', 'EPAYTEST'),
+    'SECRET_KEY': os.environ.get('ESEWA_SECRET_KEY', '8gBm/:&EnhH.1/q'),
+    'SUCCESS_URL': f'{SITE_URL}/payments/esewa/success/',
+    'FAILURE_URL': f'{SITE_URL}/payments/esewa/failure/',
+    'STATUS_CHECK_URL': os.environ.get(
+        'ESEWA_STATUS_URL', 'https://rc.esewa.com.np/api/epay/transaction/status/'
+    ),
+}
+
+# Khalti (KPG-2 ePayment). SECRET_KEY here MUST be set via environment
+# variable — there is no safe shared default like eSewa's. Get it from
+# your sandbox merchant dashboard at test-admin.khalti.com (Settings > Keys).
+KHALTI_SETTINGS = {
+    'SECRET_KEY': os.environ.get('KHALTI_SECRET_KEY', ''),
+    'BASE_URL': os.environ.get('KHALTI_BASE_URL', 'https://dev.khalti.com/api/v2'),
+    'RETURN_URL': f'{SITE_URL}/payments/khalti/callback/',
+    'WEBSITE_URL': SITE_URL,
+}
 
 # Auth redirects
 LOGIN_URL = 'accounts:login'

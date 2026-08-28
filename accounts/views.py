@@ -129,6 +129,17 @@ def my_orders(request):
 
 @login_required(login_url='accounts:login')
 def my_sales(request):
+    if request.method == 'POST':
+        item_id = request.POST.get('item_id')
+        new_status = request.POST.get('fulfillment_status')
+        valid_statuses = dict(OrderItem.FULFILLMENT_CHOICES)
+        item = get_object_or_404(OrderItem, id=item_id, product__owner=request.user)
+        if new_status in valid_statuses:
+            item.fulfillment_status = new_status
+            item.save(update_fields=['fulfillment_status'])
+            messages.success(request, f'Marked "{item.product_name}" as {valid_statuses[new_status]}.')
+        return redirect('accounts:my_sales')
+
     sale_items = OrderItem.objects.filter(product__owner=request.user).select_related('order', 'product').order_by('-order__created_at')
     return render(request, 'NewDesign/my-sales.html', {'sale_items': sale_items})
 

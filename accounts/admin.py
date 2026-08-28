@@ -1,6 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
+from django.shortcuts import redirect
+from django.urls import path, reverse
+from django.utils.html import format_html
 
 from .models import Message, Profile, ProductRequest
 
@@ -16,7 +19,7 @@ class UserAdmin(BaseUserAdmin):
 
     list_display = (
         'username', 'email', 'first_name', 'last_name',
-        'is_active', 'is_staff', 'is_superuser', 'date_joined',
+        'is_active', 'is_staff', 'is_superuser', 'date_joined', 'quick_actions',
     )
     list_filter = ('is_active', 'is_staff', 'is_superuser', 'date_joined')
     actions = ['activate_users', 'deactivate_users']
@@ -30,6 +33,43 @@ class UserAdmin(BaseUserAdmin):
         updated = queryset.exclude(id=request.user.id).update(is_active=False)
         self.message_user(request, f'{updated} user(s) deactivated.')
     deactivate_users.short_description = 'Deactivate selected users'
+
+    def quick_actions(self, obj):
+        if obj.is_active:
+            return format_html(
+                '<a class="button" style="background:#ba2121;color:#fff;" href="{}">Deactivate</a>',
+                reverse('admin:user_quick_deactivate', args=[obj.pk]),
+            )
+        return format_html(
+            '<a class="button" href="{}">Activate</a>',
+            reverse('admin:user_quick_activate', args=[obj.pk]),
+        )
+    quick_actions.short_description = 'Quick actions'
+
+    def get_urls(self):
+        custom = [
+            path(
+                '<int:pk>/quick-activate/',
+                self.admin_site.admin_view(self.quick_activate),
+                name='user_quick_activate',
+            ),
+            path(
+                '<int:pk>/quick-deactivate/',
+                self.admin_site.admin_view(self.quick_deactivate),
+                name='user_quick_deactivate',
+            ),
+        ]
+        return custom + super().get_urls()
+
+    def quick_activate(self, request, pk):
+        User.objects.filter(pk=pk).update(is_active=True)
+        self.message_user(request, 'User activated.')
+        return redirect('admin:auth_user_changelist')
+
+    def quick_deactivate(self, request, pk):
+        User.objects.filter(pk=pk).exclude(pk=request.user.id).update(is_active=False)
+        self.message_user(request, 'User deactivated.')
+        return redirect('admin:auth_user_changelist')
 
 
 admin.site.unregister(User)

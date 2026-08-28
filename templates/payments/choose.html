@@ -1,0 +1,18 @@
+{% extends 'NewDesign/base.html' %}
+{% block title %}Choose payment method{% endblock %}
+
+{% block content %}
+<section class="section-content padding-y bg">
+  <div class="container" style="max-width:480px;">
+    <h3 class="mb-4">Pay for Order #{{ order.id }}</h3>
+    <p class="mb-4">Total due: <strong>Rs. {{ order.total }}</strong></p>
+
+    <a href="{% url 'payments:esewa_start' order.id %}" class="btn btn-success btn-block mb-3">
+      Pay with eSewa
+    </a>
+    <a href="{% url 'payments:khalti_start' order.id %}" class="btn btn-primary btn-block">
+      Pay with Khalti
+    </a>
+  </div>
+</section>
+{% endblock %}

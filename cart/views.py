@@ -1,6 +1,5 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
@@ -119,28 +118,19 @@ def place_order(request, order_id):
     order = get_object_or_404(Order, id=order_id, status=Order.STATUS_PENDING, user=request.user)
 
     if request.method == 'POST':
-        with transaction.atomic():
-            # Lock the rows so two people can't both buy the last unit at once.
-            for item in order.items.select_related('product').select_for_update():
-                if item.product is None:
-                    continue
-                if item.quantity > max(item.product.stock, 0):
-                    messages.error(
-                        request,
-                        f'Sorry, "{item.product_name}" no longer has enough stock to fulfil this order.'
-                    )
-                    return redirect('cart:cart')
+        # Re-check stock before sending the customer to pay — actual stock
+        # deduction happens after the gateway confirms payment, in
+        # payments.views._fulfil_order(), not here.
+        for item in order.items.select_related('product'):
+            if item.product is None:
+                continue
+            if item.quantity > max(item.product.stock, 0):
+                messages.error(
+                    request,
+                    f'Sorry, "{item.product_name}" no longer has enough stock to fulfil this order.'
+                )
+                return redirect('cart:cart')
 
-            for item in order.items.select_related('product').select_for_update():
-                if item.product is not None:
-                    item.product.stock -= item.quantity
-                    item.product.save(update_fields=['stock'])
-
-            order.status = Order.STATUS_PLACED
-            order.save()
-
-        Cart(request).clear()
-        messages.success(request, f'Order #{order.id} placed successfully! We will be in touch shortly.')
-        return redirect('home')
+        return redirect('payments:choose', order_id=order.id)
 
     return render(request, 'NewDesign/place-order.html', {'order': order})
