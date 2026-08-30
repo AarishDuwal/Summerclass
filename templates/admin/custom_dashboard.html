@@ -1,0 +1,132 @@
+{% extends "admin/index.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-3 col-6">
+        <div class="card text-center p-2">
+            <h3 class="mb-0">{{ dash_stats.total_users }}</h3>
+            <div class="text-muted">Users</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card text-center p-2">
+            <h3 class="mb-0">{{ dash_stats.total_products }}</h3>
+            <div class="text-muted">Products ({{ dash_stats.pending_products }} pending)</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card text-center p-2">
+            <h3 class="mb-0">{{ dash_stats.total_orders }}</h3>
+            <div class="text-muted">Orders placed</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card text-center p-2">
+            <h3 class="mb-0">Rs. {{ dash_stats.total_revenue }}</h3>
+            <div class="text-muted">Total revenue</div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header"><h5 class="m-0">Recent Orders</h5></div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <tbody>
+                    {% for order in dash_recent_orders %}
+                        <tr>
+                            <td>#{{ order.id }}</td>
+                            <td>{{ order.user.username|default:'guest' }}</td>
+                            <td>Rs. {{ order.total }}</td>
+                            <td class="text-muted">{{ order.created_at|timesince }} ago</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td class="text-muted p-3">No orders yet</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header"><h5 class="m-0">Recent Login Attempts</h5></div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <tbody>
+                    {% for attempt in dash_recent_logins %}
+                        <tr{% if attempt.is_honeypot %} style="background:#fdeaea;"{% endif %}>
+                            <td>
+                                {{ attempt.username|default:'(blank)' }}
+                                {% if attempt.is_honeypot %}<span style="color:#ba2121;font-weight:bold;"> HONEYPOT</span>{% endif %}
+                            </td>
+                            <td>{{ attempt.ip_address|default:'-' }}</td>
+                            <td>
+                                {% if attempt.success %}
+                                    <span class="text-success">success</span>
+                                {% else %}
+                                    <span class="text-danger">failed</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted">{{ attempt.attempted_at|timesince }} ago</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td class="text-muted p-3">No login attempts yet</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header"><h5 class="m-0">Recent Searches</h5></div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <tbody>
+                    {% for event in dash_recent_searches %}
+                        <tr>
+                            <td>"{{ event.detail }}"</td>
+                            <td>{{ event.user.username|default:'guest' }}</td>
+                            <td class="text-muted">{{ event.created_at|timesince }} ago</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td class="text-muted p-3">No searches logged yet</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header"><h5 class="m-0">Recent Add-to-Cart Activity</h5></div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <tbody>
+                    {% for event in dash_recent_cart_adds %}
+                        <tr>
+                            <td>{{ event.detail }}</td>
+                            <td>{{ event.user.username|default:'guest' }}</td>
+                            <td class="text-muted">{{ event.created_at|timesince }} ago</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td class="text-muted p-3">No cart activity logged yet</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ block.super }}
+{% endblock %}

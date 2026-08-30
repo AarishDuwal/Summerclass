@@ -39,6 +39,8 @@ def cart_add(request, product_id):
 
     cart = Cart(request)
     cart.add(product_obj, quantity=quantity)
+    from security.utils import log_activity
+    log_activity(request, 'add_to_cart', detail=f'{product_obj.name} (x{quantity})')
     messages.success(request, f'Added "{product_obj.name}" to your cart.')
     return redirect(next_url)
 

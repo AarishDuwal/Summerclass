@@ -16,6 +16,8 @@ def products(request):
     keyword = request.GET.get('q', '').strip()
     if keyword:
         products_qs = products_qs.filter(name__icontains=keyword)
+        from security.utils import log_activity
+        log_activity(request, 'search', detail=keyword)
 
     sort = request.GET.get('sort')
     if sort == 'price_asc':

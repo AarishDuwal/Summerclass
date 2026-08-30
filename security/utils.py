@@ -5,3 +5,19 @@ def get_client_ip(request):
     if xff:
         return xff.split(',')[0].strip()
     return request.META.get('REMOTE_ADDR')
+
+
+def log_activity(request, event_type, detail=''):
+    """Fire-and-forget activity log entry for the admin dashboard feed.
+    Import is local to avoid a hard dependency between apps at import time."""
+    from .models import ActivityEvent
+    try:
+        ActivityEvent.objects.create(
+            event_type=event_type,
+            user=request.user if getattr(request, 'user', None) and request.user.is_authenticated else None,
+            detail=detail[:255],
+            ip_address=get_client_ip(request),
+        )
+    except Exception:
+        # Never let dashboard logging break the actual user-facing action.
+        pass

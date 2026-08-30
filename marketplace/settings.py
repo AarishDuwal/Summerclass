@@ -200,6 +200,11 @@ KHALTI_SETTINGS = {
 # Auth redirects
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'home'
+
+# The real Django admin lives here instead of the guessable /admin/.
+# Change this via env var whenever you want to rotate it. /admin/ itself
+# is a decoy — see security.urls / security.views.fake_admin_login.
+ADMIN_URL = os.environ.get('ADMIN_URL', 'control-panel-9f3k2')
 LOGOUT_REDIRECT_URL = 'home'
 
 # Jazzmin admin theme

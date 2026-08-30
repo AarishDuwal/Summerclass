@@ -22,7 +22,8 @@ from marketplace import settings
 from . import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path(f'{settings.ADMIN_URL}/', admin.site.urls),
+    path('admin/', include('security.urls')),  # decoy — see security/views.py
     path('', views.home, name='home'),
     path('products/', include('products.urls')),
     path('blog/', include('blog.urls')),

@@ -9,7 +9,7 @@ from cart.models import Order
 from . import utils
 
 
-def _fulfil_order(order):
+def _fulfil_order(order, request=None):
     """Decrement stock and mark the order placed. Called only after a
     payment gateway has confirmed the money actually moved."""
     with transaction.atomic():
@@ -20,11 +20,33 @@ def _fulfil_order(order):
         order.status = Order.STATUS_PLACED
         order.save(update_fields=['status'])
 
+    if request is not None:
+        from security.utils import log_activity
+        log_activity(
+            request, 'order_placed',
+            detail=f'Order #{order.id} - Rs. {order.total} via {order.get_payment_method_display()}'
+        )
+
 
 @login_required(login_url='accounts:login')
 def choose_payment(request, order_id):
     order = get_object_or_404(Order, id=order_id, status=Order.STATUS_PENDING, user=request.user)
     return render(request, 'payments/choose.html', {'order': order})
+
+
+@login_required(login_url='accounts:login')
+def cod_confirm(request, order_id):
+    order = get_object_or_404(Order, id=order_id, status=Order.STATUS_PENDING, user=request.user)
+
+    if request.method == 'POST':
+        order.payment_method = Order.PAYMENT_COD
+        order.save(update_fields=['payment_method'])
+        _fulfil_order(order, request)
+        Cart(request).clear()
+        messages.success(request, f'Order #{order.id} placed successfully! Pay in cash when it arrives.')
+        return redirect('home')
+
+    return render(request, 'payments/cod_confirm.html', {'order': order})
 
 
 # ---------------------------------------------------------------------------
@@ -59,7 +81,7 @@ def esewa_success(request):
         messages.error(request, 'Payment could not be confirmed with eSewa. Please contact support.')
         return redirect('cart:cart')
 
-    _fulfil_order(order)
+    _fulfil_order(order, request)
     Cart(request).clear()
     messages.success(request, f'Order #{order.id} placed successfully! Payment received via eSewa.')
     return redirect('home')
@@ -103,7 +125,7 @@ def khalti_callback(request):
         messages.error(request, 'Khalti payment was not completed. Your order has not been placed.')
         return redirect('cart:cart')
 
-    _fulfil_order(order)
+    _fulfil_order(order, request)
     Cart(request).clear()
     messages.success(request, f'Order #{order.id} placed successfully! Payment received via Khalti.')
     return redirect('home')
