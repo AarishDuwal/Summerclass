@@ -47,6 +47,10 @@ class ActivityEvent(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
     )
+    guest_id = models.CharField(
+        max_length=40, blank=True, db_index=True,
+        help_text='Stable per-browser-session id for events logged before the visitor was logged in.'
+    )
     detail = models.CharField(max_length=255, blank=True)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -55,5 +59,5 @@ class ActivityEvent(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        who = self.user.username if self.user else 'anonymous'
+        who = self.user.username if self.user else f'Guest-{self.guest_id[:6]}'
         return f'{self.get_event_type_display()} by {who}: {self.detail}'

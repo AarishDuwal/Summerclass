@@ -29,11 +29,19 @@ class LoginAttemptAdmin(admin.ModelAdmin):
 
 @admin.register(ActivityEvent)
 class ActivityEventAdmin(admin.ModelAdmin):
-    list_display = ('event_type', 'user', 'detail', 'ip_address', 'created_at')
+    list_display = ('event_type', 'who', 'detail', 'ip_address', 'created_at')
     list_filter = ('event_type', 'created_at')
-    search_fields = ('detail', 'ip_address', 'user__username')
+    search_fields = ('detail', 'ip_address', 'user__username', 'guest_id')
     date_hierarchy = 'created_at'
     ordering = ('-created_at',)
+
+    def who(self, obj):
+        if obj.user:
+            return obj.user.username
+        if obj.guest_id:
+            return f'Guest-{obj.guest_id[:6]}'
+        return 'unknown'
+    who.short_description = 'User'
 
     def has_add_permission(self, request):
         return False

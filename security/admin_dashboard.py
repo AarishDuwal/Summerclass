@@ -1,10 +1,15 @@
 """
-Adds an analytics section to the top of the Django admin dashboard:
-overview stats, recent orders, recent login attempts (including honeypot
-hits), recent searches, and recent add-to-cart activity.
+Adds a small "at a glance" stats strip to the top of the Django admin
+dashboard: user/product/order counts and total revenue. Deliberately does
+NOT duplicate detailed lists here — Recent Orders live under Cart > Orders,
+and login attempts / site activity live under Security > Login attempts
+and Security > Activity events in the sidebar, where they get proper
+search, filtering, and pagination that a hand-rolled dashboard table can't
+match. Keeping the dashboard itself light stops it turning into a second,
+worse copy of those pages.
 
 Implemented by pointing AdminSite.index_template at our own template
-(which extends the real admin/index.html and injects extra sections) and
+(which extends the real admin/index.html and injects one extra block) and
 wrapping AdminSite.index() so it computes the extra context. This avoids
 having to subclass AdminSite and re-register every model against a new
 site instance.
@@ -21,7 +26,6 @@ def _dashboard_context():
     from django.contrib.auth.models import User
     from products.models import product as Product
     from cart.models import Order
-    from .models import LoginAttempt, ActivityEvent
 
     placed_orders = Order.objects.filter(status=Order.STATUS_PLACED)
     total_revenue = sum((o.total for o in placed_orders), 0)
@@ -36,14 +40,6 @@ def _dashboard_context():
             'total_orders': placed_orders.count(),
             'total_revenue': round(total_revenue, 2),
         },
-        'dash_recent_orders': placed_orders.select_related('user').order_by('-created_at')[:8],
-        'dash_recent_logins': LoginAttempt.objects.order_by('-attempted_at')[:8],
-        'dash_recent_searches': ActivityEvent.objects.filter(
-            event_type=ActivityEvent.SEARCH
-        ).order_by('-created_at')[:8],
-        'dash_recent_cart_adds': ActivityEvent.objects.filter(
-            event_type=ActivityEvent.ADD_TO_CART
-        ).order_by('-created_at')[:8],
     }
 
 
